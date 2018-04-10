@@ -1,0 +1,102 @@
+
+% Template for Seminar Papers
+% Research Group for Parallel Computing
+% TU Wien
+
+% Copyright (C) 2015-2018
+% Sascha Hunold <hunold@par.tuwien.ac.at>
+% version 1.2.0
+
+\documentclass[DIV12,a4paper]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+%\usepackage{fixltx2e} 
+\usepackage{amsmath}  
+\usepackage{amssymb} 
+\usepackage{microtype} 
+\usepackage{enumitem} 
+\usepackage{booktabs} 
+\usepackage{nag}       % Issues warnings when best practices in writing LaTeX documents are violated.
+\usepackage{xspace}
+\usepackage{graphicx}
+\usepackage[square,numbers]{natbib}  % need this for DOI (or use biber/biblatex)
+\usepackage{bibentry}
+\usepackage{hyperref}
+\usepackage[binary-units]{siunitx}
+\nobibliography*
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ONLY CHANGE THE FOLLOWING MACROS
+
+% your name
+\newcommand{\studname}{Martina Musterfrau}
+
+% your matrikel
+\newcommand{\studmatrikel}{0123454321}
+
+% name of seminar
+\newcommand{\seminarname}{Scheduling Algorithms for Clusters, Distributed Systems, and Multi-core Nodes}
+
+% title of your seminar paper (is usually title of the paper)
+\newcommand{\seminartitle}{Simulation of MPI Applications}
+
+% date when you hand in seminar paper
+\newcommand{\spdate}{24. April 2016}
+
+% uncomment your choice
+\newcommand{\sptopic}{Seminar aus Programmiersprachen}
+%\newcommand{\sptopic}{Seminar aus Algorithmik}
+%\newcommand{\sptopic}{Seminar aus Software Engineering}
+%\newcommand{\sptopic}{Seminar aus Theoretischer Informatik}
+%\newcommand{\sptopic}{Seminar aus Technischer Informatik}
+
+% who is supervising
+\newcommand{\spbetreuer}{Ass.Prof. Dr. Sascha Hunold}
+%\newcommand{\spbetreuer}{Prof. Dr. Jesper Larsson Träff}
+
+% YOU SHOULD NOT NEED TO CHANGE THE REMAINING FILE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\graphicspath{{graphics/}}
+
+
+\begin{document}
+\hypersetup{pageanchor=false}
+
+\input{titlepage}
+
+\cleardoublepage
+
+
+\section*{Main Literature Sources}
+
+\begin{NoHyper}
+The following seminar report is based on the following research articles:
+\input{sources}
+\end{NoHyper}
+
+\clearpage
+
+\input{statement}
+
+\clearpage
+
+\hypersetup{pageanchor=true}
+\tableofcontents
+
+\cleardoublepage
+
+\pagestyle{plain}
+
+\setcounter{page}{1}
+
+\input{main}
+
+\cleardoublepage
+% Add a bibliography
+\bibliographystyle{plainnat}
+\bibliography{myreferences}
+
+\end{document}

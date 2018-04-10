@@ -1,0 +1,57 @@
+% Copyright 2007 by Till Tantau
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+%
+% See the file doc/licenses/LICENSE for more details.
+
+%\ProvidesPackageRCS $Header: /cvsroot/latex-beamer/latex-beamer/themes/theme/beamerthemeMadrid.sty,v 1.8 2007/01/28 20:48:30 tantau Exp $
+
+\mode<presentation>
+
+\newif\ifbeamer@secheader
+\beamer@secheaderfalse
+
+\DeclareOptionBeamer{secheader}{\beamer@secheadertrue}
+\ProcessOptionsBeamer
+
+
+\useinnertheme[shadow]{rounded}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{craneorange}{RGB}{229,179,27}
+\definecolor{craneblue}{RGB}{32,49,133}
+\definecolor{cranegreen}{RGB}{15,62,24}
+\definecolor{cranered}{RGB}{184,12,40}
+
+\setbeamercolor{structure}{fg=cranegreen}
+\setbeamercolor{alerted text}{fg=cranered}
+\setbeamercolor{example text}{fg=craneblue}
+
+\colorlet{tfg}{black}
+\colorlet{tbg}{craneorange}
+
+%% \setbeamercolor{palette primary}{fg=tfg,bg=tbg!70}
+%% \setbeamercolor{palette secondary}{fg=tfg,bg=tbg!80}
+%% \setbeamercolor{palette tertiary}{fg=tfg,bg=tbg!90}
+%% \setbeamercolor{palette quaternary}{fg=tfg,bg=tbg}
+
+\setbeamercolor{palette primary}{fg=tfg,bg=tbg}
+\setbeamercolor{palette secondary}{fg=tfg,bg=tbg!80}
+\setbeamercolor{palette tertiary}{fg=tfg,bg=tbg!60}
+\setbeamercolor{palette quaternary}{fg=tfg,bg=tbg!40}
+
+\setbeamercolor*{titlelike}{parent=palette primary}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usecolortheme{rose}
+
+\useoutertheme{tuw}
+
+
+\ifbeamer@secheader\else\setbeamertemplate{headline}[default]\fi
+
+\mode
+<all>
