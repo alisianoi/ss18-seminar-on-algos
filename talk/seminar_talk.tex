@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage[normalem]{ulem}
 \usepackage{amsmath}
+\usepackage{IEEEtrantools}
 \usepackage{hyperref}
 \tolerance=1000
 \usepackage{algorithm}
@@ -45,9 +46,9 @@ maxcitenames=4
 \titlegraphic{\includegraphics[height=.7cm]{./logos/par-logo.pdf}\quad\includegraphics[height=.7cm]{./logos/info-logo.pdf}}
 
 % change this, of course
-\date{20.04.2030} 
-\title[MPI and Communicating Threads]{Towards millions of communicating threads}
-\author[Sascha Hunold]{Sascha Hunold}
+\date{\today}
+\title[Scheduling Jobs with Max-Min Fairness]{Scheduling Jobs across Geo-Distributed Datacenters with Max-Min Fairness}
+\author[Aleksandr Lisianoi]{Aleksandr Lisianoi}
 
 \begin{document}
 
@@ -56,7 +57,7 @@ maxcitenames=4
 
 \begin{frame}{Seminar Talk's Main Sources}
   \begin{enumerate}
-  \item \fullcite{Dang16}
+  \item \fullcite{Chen2017}
   \end{enumerate}
 \end{frame}
 
@@ -67,12 +68,52 @@ maxcitenames=4
 
 \section{Introduction}
 
-\begin{frame}
-  \frametitle{Context}
+\begin{frame}{Problem Description}
+  \begin{block}{The Main Question}
+    Given a \emph{large volume} of data stored in \emph{geographically distributed} datacenters, how to effectively run \emph{multiple} analytical jobs in a \emph{fair} fashion?
+    \end{block}
+
+  Things to consider:
+
+  \begin{enumerate}
+    \item Data locality
+    \item Network bandwidth
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{What is an Analytic Job?}
+
+  A data analytic job usually consists of several consecutive stages, each of which consists of several parallel tasks.
+
+  Examples:
   \begin{itemize}
-  \item problem 
-  \item objective
-  \end{itemize}
+  \item 2007 The New York Times https://open.blogs.nytimes.com/2007/11/01/self-service-prorated-super-computing-fun/
+  \item 2017 Spotify https://labs.spotify.com/2017/10/16/big-data-processing-at-spotify-the-road-to-scio-part-1/
+    Alternating Least Squares: if User x Score matrix is binary, then the author could parallelize efficiently with Spark
+    Spotify operates a Hadoop cluster to over 2500 nodes and over 100 PBs of capacity running about 20,000 independent jobs per day.
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Analytic Job: Formal Definition}
+  \begin{IEEEeqnarray*}{llCl}
+    \text{Datacenter: }                                     & \mathcal{D}   &=& \left\{1, 2, \dots, J\right\} \\
+    \text{Datacenter capacity for \(j\in\mathcal{D}\): }    & \mathcal{A}   &=& \left\{a_1, a_2, \dots, a_J\right\} \\
+    \text{Data parallel job: }                              & \mathcal{K}   &=& \left\{1, 2, \dots, K\right\} \\
+    \text{Parallel tasks for job \(k \in \mathcal{K}\): }   & \mathcal{T}_k &=& \left\{1, 2, \dots, n_k\right\} \\
+  \end{IEEEeqnarray*}
+  For each task \(i\in\mathcal{T}_k\) of job \(k\): network transfer time \(c^k_{i, j}\) and execution time \(e^k_{i, j}\) if datacenter \(j\) is used. Source datacenters for task \(i\) of job \(k\) are \(S^k_i\).
+
+  \begin{equation*}
+    c^k_{i, j} = \left\{ \,
+    \begin{IEEEeqnarraybox}[][c]{l?s}
+      \IEEEstrut
+      0, &  when \(S^k_i = \left\{j\right\}\)\\
+      \max_{s\in S^k_i, s\neq j}\left(\frac{d^{k, s}_i}{b_{s,j}}\right) & otherwise
+      \IEEEstrut
+    \end{IEEEeqnarraybox}
+    \right.
+  \end{equation*}
 \end{frame}
 
 \section{Experimental Evaluation}
