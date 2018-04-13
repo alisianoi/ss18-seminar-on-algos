@@ -7,6 +7,7 @@
 \usepackage[normalem]{ulem}
 \usepackage{amsmath}
 \usepackage{IEEEtrantools}
+\usepackage{bm}
 \usepackage{hyperref}
 \tolerance=1000
 \usepackage{algorithm}
@@ -114,6 +115,35 @@ maxcitenames=4
     \end{IEEEeqnarraybox}
     \right.
   \end{equation*}
+\end{frame}
+
+\begin{frame}{Analytic Job: Formal Definition (continued)}
+  \begin{IEEEeqnarray}{lrCll}
+    \text{lexmin}_{\bm{x}} & \bm{f} &=&\left(\tau_1, \tau_2, \dots, \tau_K\right) &\\
+    \text{s.t.} & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right), &\forall k\in\mathcal{K} \label{eq:goal}\\
+    &&& \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k} x^k_{i, j} \leq a_j, &\forall j\in\mathcal{D} \label{eq:capacity}\\
+    &&& \sum_{j\in\mathcal{D}}x^k_{i, j} = 1, &\forall i\in\mathcal{T}_k, \forall k\in\mathcal{K} \label{eq:presence}\\
+    &&& x^k_{i, j} \in \left\{0, 1\right\}. &\forall i \in \mathcal{T}_k, \forall j\in\mathcal{D}, \forall k\in\mathcal{K} \label{eq:onehot}
+  \end{IEEEeqnarray}
+
+  Constraint \eqref{eq:goal}: a task requires as long as its longest job. \\
+  Constraint \eqref{eq:capacity}: capacity of the datacenter is not exceeded. \\
+  Constraint \eqref{eq:presence}: each job is assigned to exactly one datacenter. \\
+\end{frame}
+
+\begin{frame}{Problem Transformations}
+  From multiple-objective to single-objective optimization:
+  \begin{IEEEeqnarray}{ll}
+    \min_{\bm{x}} & \quad \max_{k\in\mathcal{K}}\left(\tau_k\right) \\
+    \text{s.t.}  & \quad \text{Constraints \eqref{eq:goal}, \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
+  \end{IEEEeqnarray}
+
+  From non-linear constraints to linear constraints:
+
+  \begin{IEEEeqnarray}{ll}
+    \min_{\bm{x}} & \quad \max_{k\in\mathcal{K}}\left(\max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right)\right) \\
+    \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
+    \end{IEEEeqnarray}
 \end{frame}
 
 \section{Experimental Evaluation}
