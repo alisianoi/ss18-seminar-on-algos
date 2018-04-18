@@ -51,6 +51,8 @@ maxcitenames=4
 \title[Scheduling Jobs with Max-Min Fairness]{Scheduling Jobs across Geo-Distributed Datacenters with Max-Min Fairness}
 \author[Aleksandr Lisianoi]{Aleksandr Lisianoi}
 
+% \newtheorem*{definition}{Definition}
+
 \begin{document}
 
 \maketitle
@@ -59,6 +61,7 @@ maxcitenames=4
 \begin{frame}{Seminar Talk's Main Sources}
   \begin{enumerate}
   \item \fullcite{Chen2017}
+  \item \fullcite{Meyer1976}
   \end{enumerate}
 \end{frame}
 
@@ -144,6 +147,35 @@ maxcitenames=4
     \min_{\bm{x}} & \quad \max_{k\in\mathcal{K}}\left(\max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right)\right) \\
     \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
     \end{IEEEeqnarray}
+\end{frame}
+
+\begin{frame}{Unimodular Matrix}
+  \begin{definition}[Unimodular Matrix]
+    Matrix \(M\) is a \emph{unimodular matrix} if it is a \emph{square}, \emph{integer} matrix with \[\det M = \pm 1\]
+  \end{definition}
+  \begin{definition}[Unimodular Matrix]
+    Matrix \(M\) is a \emph{unimodular matrix} if it is an
+    \emph{integer}, \emph{invertible} matrix and its inverse is also
+    an \emph{integer}, \emph{invertible} matrix.
+  \end{definition}
+  Examples: identity matrix, \emph{permutation matrix}, pascal matrix, \dots
+\end{frame}
+
+\begin{frame}{Totally Unimodular Matrix}
+  \begin{definition}{Totally Unimodular Matrix}
+    Matrix \(M\) is a \emph{totally unimodular matrix} if its every
+    non-singular square submatrix is unimodular.
+  \end{definition}
+
+  \begin{definition}{Totally Unimodular Matrix}
+    Matrix \(M\) is a \emph{totally unimodular matrix} if its every
+    element is either \(0\) or \(\pm 1\).
+  \end{definition}
+
+  Important well-known optimization fact: if \(M\) is totally
+  unimodular and \(b\) is integral, then linear programs \(\left\{\min
+  cx | Mx \geq b, x\geq 0\right\}\) and \(\{\max cx | Mx \leq b\}\)
+  have integral optima for any \(c\).
 \end{frame}
 
 \section{Experimental Evaluation}
