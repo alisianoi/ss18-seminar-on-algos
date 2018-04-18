@@ -169,14 +169,23 @@ maxcitenames=4
 
   \begin{definition}{Totally Unimodular Matrix}
     Matrix \(M\) is a \emph{totally unimodular matrix} if its every
-    element is either \(0\) or \(\pm 1\).
+    \emph{square submatrix} \(A\) has \(\det A\in \{-1, 0, 1\}\)
   \end{definition}
 
+  \begin{definition}{Totally Unimodular Matrix}
+    Matrix \(A\) is a \emph{totally unimodular matrix} if its every
+    element \(A_{i, j}\in \{-1, 0, 1\}\) and any row subset \(R\) can
+    be divided into two disjoint subsets \(R_1\) and \(R_2\) s.t.
+    \[\left|\sum_{i\in R_1} a_{i, j} - \sum_{i\in R_2}a_{i, j}\right| \leq 1, \forall j\in{1, 2, \dots, n}\]
+    \end{definition}
+\end{frame}
+
+\begin{frame}{Totally Unimodular Matrices in Optimization}
   Important well-known optimization fact: if \(M\) is totally
   unimodular and \(b\) is integral, then linear programs \(\left\{\min
   cx | Mx \geq b, x\geq 0\right\}\) and \(\{\max cx | Mx \leq b\}\)
   have integral optima for any \(c\).
-\end{frame}
+  \end{frame}
 
 \section{Experimental Evaluation}
 
