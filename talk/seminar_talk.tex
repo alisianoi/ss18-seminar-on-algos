@@ -51,12 +51,9 @@ maxcitenames=4
 \title[Scheduling Jobs with Max-Min Fairness]{Scheduling Jobs across Geo-Distributed Datacenters with Max-Min Fairness}
 \author[Aleksandr Lisianoi]{Aleksandr Lisianoi}
 
-% \newtheorem*{definition}{Definition}
-
 \begin{document}
 
 \maketitle
-
 
 \begin{frame}{Seminar Talk's Main Sources}
   \begin{enumerate}
@@ -134,6 +131,14 @@ maxcitenames=4
   Constraint \eqref{eq:presence}: each job is assigned to exactly one datacenter. \\
 \end{frame}
 
+\begin{frame}{Transformation Plan}
+  \begin{itemize}
+  \item Separable convex objective
+  \item Totally unimodular linear constraints
+  \item Apply \(\lambda\)-representation technique
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{Towards Single Objective and Linear Constraints}
   From multiple-objective to single-objective optimization:
   \begin{IEEEeqnarray}{ll}
@@ -141,23 +146,29 @@ maxcitenames=4
     \text{s.t.}  & \quad \text{Constraints \eqref{eq:goal}, \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
   \end{IEEEeqnarray}
 
+  \pause
+
   From non-linear constraints to linear constraints:
 
   \begin{IEEEeqnarray}{ll}
     \min_{\bm{x}} & \quad \max_{k\in\mathcal{K}}\left(\max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right)\right) \\
     \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
   \end{IEEEeqnarray}
-\end{frame}
 
-\begin{frame}{Back to Lexicographic Minimization}
+  \pause
+
   \begin{equation*}
         \phi (x^k_{i, j}) =_{df} x^k_{i, j} (c^k_{i, j} + e^k_{i, j}), \forall i\in\mathcal{T}_k, j\in \mathcal{D}, k\in\mathcal{K}
   \end{equation*}
+
+  \pause
+
   From minimizing the triple maximum to lexicographic minimization:
   \begin{IEEEeqnarray}{ll}
-    \text{lexmin}_{\bm{x}} & \quad \bm{g} = \left(\phi(x^1_{1, 1}), \dots, \phi(x^k_{i, j}), \dots, \phi(x^K_{n_k, J}))\right) \\
+    \text{lexmin}_{\bm{x}} & \quad \bm{g} = \left(\phi(x^1_{1, 1}), \dots, \phi(x^k_{i, j}), \dots, \phi(x^K_{n_k, J})\right) \\
     \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
   \end{IEEEeqnarray}
+
 \end{frame}
 
 \begin{frame}{Towards a Separable Objective Function}
