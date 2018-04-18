@@ -117,13 +117,19 @@ maxcitenames=4
   \end{equation*}
 \end{frame}
 
+\newcommand{\foralltdk}{\forall i \in \mathcal{T}_k, \forall j\in\mathcal{D}, \forall k\in\mathcal{K}}
+\newcommand{\fcapacity}{\sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k} x^k_{i, j} \leq a_j}
+\newcommand{\fcapacityq}{\forall j\in\mathcal{D}}
+\newcommand{\fpresence}{\sum_{j\in\mathcal{D}}x^k_{i, j} = 1}
+\newcommand{\fpresenceq}{\forall i\in\mathcal{T}_k, \forall k\in\mathcal{K}}
+
 \begin{frame}{First Optimization Problem}
   \begin{IEEEeqnarray}{lrCll}
     \text{lexmin}_{\bm{x}} & \bm{f} &=&\left(\tau_1, \tau_2, \dots, \tau_K\right) &\\
     \text{s.t.} & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right), &\forall k\in\mathcal{K} \label{eq:goal}\\
-    &&& \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k} x^k_{i, j} \leq a_j, &\forall j\in\mathcal{D} \label{eq:capacity}\\
-    &&& \sum_{j\in\mathcal{D}}x^k_{i, j} = 1, &\forall i\in\mathcal{T}_k, \forall k\in\mathcal{K} \label{eq:presence}\\
-    &&& x^k_{i, j} \in \left\{0, 1\right\}. &\forall i \in \mathcal{T}_k, \forall j\in\mathcal{D}, \forall k\in\mathcal{K} \label{eq:onehot}
+    &&& \fcapacity,  &\fcapacityq\label{eq:capacity}\\
+    &&& \fpresence,  &\fpresenceq\label{eq:presence}\\
+    &&& x^k_{i, j} \in \left\{0, 1\right\}. &\foralltdk\label{eq:onehot}
   \end{IEEEeqnarray}
 
   Constraint \eqref{eq:goal}: a task requires as long as its longest job. \\
@@ -166,9 +172,8 @@ maxcitenames=4
   From minimizing the triple maximum to lexicographic minimization:
   \begin{IEEEeqnarray}{ll}
     \text{lexmin}_{\bm{x}} & \quad \bm{g} = \left(\phi(x^1_{1, 1}), \dots, \phi(x^k_{i, j}), \dots, \phi(x^K_{n_k, J})\right) \\
-    \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
+    \text{s.t.}           & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
   \end{IEEEeqnarray}
-
 \end{frame}
 
 \begin{frame}{Towards a Separable Objective Function}
@@ -187,6 +192,31 @@ maxcitenames=4
   \begin{IEEEeqnarray}{ll}
     \min_{\bm{x}} & \quad \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k}\sum_{j\in\mathcal{D}} M^{\varphi(x^k_{i, j})} \\
     \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
+  \end{IEEEeqnarray}
+\end{frame}
+
+\newcommand{\flambdas}{\lambda^{k, 0}_{i, j} + \lambda^{k, 1}_{i, j}}
+\newcommand{\fsmember}{\flambdas M^{\left(c^k_{i, j} + e^k_{i, j}\right)}}
+\newcommand{\rplus}{\mathbf{R}^{+}}
+
+\begin{frame}{Removing Integrality Constraints}
+  Lambda representation technique:
+  \begin{IEEEeqnarray}{lCl}
+    M^{\varphi\left(x^k_{i, j}\right)} &=& \sum_{s\in\{0,1\}} M^{s\left(c^k_{i, j} + e^k_{i, j}\right)}\lambda^{k, s}_{i, j} = \fsmember \\
+    x^k_{i, j} &=& \sum_{s\in\{0, 1\}}s\lambda^{k, s}_{i, j} = \lambda^{k, 1}_{i, j} \\
+    \sum_{s\in\{0, 1\}} \lambda^{k, s}_{i, j} &=& \flambdas = 1 \\
+    \lambda^{k, s}_{i, j} &\in& \rplus
+    \end{IEEEeqnarray}
+\end{frame}
+
+\begin{frame}{Final Problem}
+  \begin{IEEEeqnarray}{Cl}
+    \min_{\bm{x}} & \quad \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k}\sum_{j\in\mathcal{D}} \left(\fsmember\right) \\
+    \text{s.t.}  & \quad x^k_{i, j} = \lambda^{k, 1}_{i, j}, \foralltdk \\
+                 & \quad \flambdas = 1, \foralltdk \\
+                 & \quad x^k_{i, j}, \lambda^{k, 0}_{i, j}, \lambda^{k, 1}_{i, j} \in \rplus, \foralltdk \\
+    & \quad \fcapacity, \fcapacityq \\
+    & \quad \fpresence, \fpresenceq
   \end{IEEEeqnarray}  
 \end{frame}
 
