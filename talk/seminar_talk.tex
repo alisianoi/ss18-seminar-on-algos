@@ -99,7 +99,7 @@ maxcitenames=4
 
 \end{frame}
 
-\begin{frame}{Analytic Job: Formal Definition}
+\begin{frame}{Background Definitions}
   \begin{IEEEeqnarray*}{llCl}
     \text{Datacenter: }                                     & \mathcal{D}   &=& \left\{1, 2, \dots, J\right\} \\
     \text{Datacenter capacity for \(j\in\mathcal{D}\): }    & \mathcal{A}   &=& \left\{a_1, a_2, \dots, a_J\right\} \\
@@ -120,7 +120,7 @@ maxcitenames=4
   \end{equation*}
 \end{frame}
 
-\begin{frame}{Analytic Job: Formal Definition (continued)}
+\begin{frame}{First Optimization Problem}
   \begin{IEEEeqnarray}{lrCll}
     \text{lexmin}_{\bm{x}} & \bm{f} &=&\left(\tau_1, \tau_2, \dots, \tau_K\right) &\\
     \text{s.t.} & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right), &\forall k\in\mathcal{K} \label{eq:goal}\\
@@ -134,7 +134,7 @@ maxcitenames=4
   Constraint \eqref{eq:presence}: each job is assigned to exactly one datacenter. \\
 \end{frame}
 
-\begin{frame}{Problem Transformations}
+\begin{frame}{Towards Single Objective and Linear Constraints}
   From multiple-objective to single-objective optimization:
   \begin{IEEEeqnarray}{ll}
     \min_{\bm{x}} & \quad \max_{k\in\mathcal{K}}\left(\tau_k\right) \\
@@ -146,7 +146,37 @@ maxcitenames=4
   \begin{IEEEeqnarray}{ll}
     \min_{\bm{x}} & \quad \max_{k\in\mathcal{K}}\left(\max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right)\right) \\
     \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
-    \end{IEEEeqnarray}
+  \end{IEEEeqnarray}
+\end{frame}
+
+\begin{frame}{Back to Lexicographic Minimization}
+  \begin{equation*}
+        \phi (x^k_{i, j}) =_{df} x^k_{i, j} (c^k_{i, j} + e^k_{i, j}), \forall i\in\mathcal{T}_k, j\in \mathcal{D}, k\in\mathcal{K}
+  \end{equation*}
+  From minimizing the triple maximum to lexicographic minimization:
+  \begin{IEEEeqnarray}{ll}
+    \text{lexmin}_{\bm{x}} & \quad \bm{g} = \left(\phi(x^1_{1, 1}), \dots, \phi(x^k_{i, j}), \dots, \phi(x^K_{n_k, J}))\right) \\
+    \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
+  \end{IEEEeqnarray}
+\end{frame}
+
+\begin{frame}{Towards a Separable Objective Function}
+  \begin{IEEEeqnarray*}{lCl}
+    g^m &=_{df}& \text{element of vector }\bm{g}\text{ at position }m \\
+    M &=_{df} & |\bm{g}| = J\sum_{k = 1}^{K}n_k \\
+    \varphi(\bm{g}) & =_{df} & \sum_{m = 1}^{M}M^{g_m}
+  \end{IEEEeqnarray*}
+  \begin{lemma}
+    \(\varphi(.)\) preserves the order of ``lexicographically no greater'' \(\preceq\), i.e.
+    \[\bm{g}(x^*) \preceq \bm{g}(x) \iff \varphi(\bm{g}(x^*)) \leq\varphi(\bm{g}(x))\]
+  \end{lemma}
+\end{frame}
+
+\begin{frame}{Separable Objective Function Achieved}
+  \begin{IEEEeqnarray}{ll}
+    \min_{\bm{x}} & \quad \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k}\sum_{j\in\mathcal{D}} M^{\varphi(x^k_{i, j})} \\
+    \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
+  \end{IEEEeqnarray}  
 \end{frame}
 
 \begin{frame}{Unimodular Matrix}
