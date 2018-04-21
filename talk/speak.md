@@ -60,4 +60,36 @@ Europe, has also their servers present in datacenters across the globe
 and runs approximately 20 thousand analytic jobs daily, their use case
 is applicable for the optimization problem you are about to see.
 
-Finally, let's talk about fairness. 
+Finally, let's talk about fairness. To begin with, fairness
+intuitively is a situation when all the participants get a fair share
+of the available resources. As for Max-Min fairness specifically, it
+is a situation when one cannot increase the share of some
+participant's resources without decreasing the non-larger share of
+some other participant. There are many possible scheduling strategies, like:
+
+1. Maximum throughtput scheduling, which preferes to allocate
+resources for the smallest jobs from the job queue first, leading to
+high job completion rates but long wait times for large jobs.
+2. First-come first-served scheduling, which allocates available
+resources to those jobs that are queued first, and then subsequent
+jobs have to wait until some of those resources are freed. If any job
+"misbehaves", then subsequent jobs suffer the consequences.
+3. Max-Min fairness, which allocates resources to jobs as those jobs
+arrive by decreasing the share of resources for the existing jobs.
+
+Now let us move on to actually formulate the mathematical model. The
+main paper defines several sets, here they are. These are datacenters,
+they are numbered, here is the capacity of a datacenter which in this
+model just equals the number of tasks the datacenter can run at the
+same time. This is the set of analytic jobs, each of which has a
+corresponding set of tasks. Now, pay attention as each job generally
+speaking has a different number of tasks. Finally, here is the
+execution time of a particular task i from a particular job k if that
+task is assigned to a particular datacenter j. And this one is the
+total time it takes to move all the data which is required for task i
+from potentially other datacenters into datacenter j.
+
+Here is the first optimization problem. This problem is about
+lexicographic minimization of a vector of numbers. In the name of
+saving some time I am going to skip the formal definition and instead
+explain it informally.
