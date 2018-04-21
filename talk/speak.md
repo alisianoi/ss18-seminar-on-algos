@@ -89,7 +89,18 @@ task is assigned to a particular datacenter j. And this one is the
 total time it takes to move all the data which is required for task i
 from potentially other datacenters into datacenter j.
 
-Here is the first optimization problem. This problem is about
-lexicographic minimization of a vector of numbers. In the name of
-saving some time I am going to skip the formal definition and instead
-explain it informally.
+Here is a chain of three definitions for lexicographic order on
+verctors of numbers and lexicographic minimization. These definitions
+are more or less what you would expect but there is one small trick
+which is better demonstrated on the optimization problem itself. Which
+is why let us quickly move on to the problem so that I could show it.
+
+Here is the first optimization problem, which is an instance of
+lexicographic optimization. Here is how it works... Constraints...
+
+Now, this problem is not a pleasant or known optimization
+problem. However, the main paper shows a series of transformations
+which produce an equivalent problem which belongs to the class of
+optimization problems described in the second paper. That class of
+problems is defined by the following characteristics:
+
