@@ -62,10 +62,18 @@ maxcitenames=4
   \end{enumerate}
 \end{frame}
 
-\begin{frame}{Outline}
-  % \tableofcontents[currentsection]
-  \tableofcontents
-\end{frame}
+\AtBeginSection[]
+{
+ \begin{frame}<beamer>
+ \frametitle{Plan}
+ \tableofcontents[currentsection]
+ \end{frame}
+}
+
+%% \begin{frame}{Outline}
+%%   % \tableofcontents[currentsection]
+%%   \tableofcontents
+%% \end{frame}
 
 \section{Introduction}
 
@@ -92,29 +100,43 @@ maxcitenames=4
 \end{frame}
 
 \begin{frame}{Fairness}
-  
-  \end{frame}
+  \emph{Fairness}: all the participants get a fair share of the
+  resources.
+  \\~\\
+  \emph{Max-Min fairness}: any attempt to increase any participant's
+  share decreases some non-larger share of another participant.
+\end{frame}
+
+\section{Model and Formulation}
 
 \begin{frame}{Background Definitions}
   \begin{IEEEeqnarray*}{llCl}
-    \text{Datacenter: }                                     & \mathcal{D}   &=& \left\{1, 2, \dots, J\right\} \\
-    \text{Datacenter capacity for \(j\in\mathcal{D}\): }    & \mathcal{A}   &=& \left\{a_1, a_2, \dots, a_J\right\} \\
-    \text{Data parallel job: }                              & \mathcal{K}   &=& \left\{1, 2, \dots, K\right\} \\
-    \text{Parallel tasks for job \(k \in \mathcal{K}\): }   & \mathcal{T}_k &=& \left\{1, 2, \dots, n_k\right\} \\
+    \text{Datacenter: }                 & \mathcal{D}   &=& \left\{1, 2, \dots, J\right\} \\
+    \text{Datacenter capacity: }        & \mathcal{A}   &=& \left\{a_1, a_2, \dots, a_J\right\} \\
+    \text{Analytic job: }               & \mathcal{K}   &=& \left\{1, 2, \dots, K\right\} \\
+    \text{Parallel tasks of a job: }    & \mathcal{T}_k &=& \left\{1, 2, \dots, n_k\right\} \\
+    \text{Execution time of a task: }                 & e^k_{i, j} \\
+    \text{Network transfer time of a task: } & c^k_{i, j}
   \end{IEEEeqnarray*}
-  For each task \(i\in\mathcal{T}_k\) of job \(k\): network transfer time \(c^k_{i, j}\) and execution time \(e^k_{i, j}\) if datacenter \(j\) is used. Source datacenters for task \(i\) of job \(k\) are \(S^k_i\).
-
-  \begin{equation*}
-    c^k_{i, j} = \left\{ \,
-    \begin{IEEEeqnarraybox}[][c]{l?s}
-      \IEEEstrut
-      0, &  when \(S^k_i = \left\{j\right\}\)\\
-      \max_{s\in S^k_i, s\neq j}\left(\frac{d^{k, s}_i}{b_{s,j}}\right) & otherwise
-      \IEEEstrut
-    \end{IEEEeqnarraybox}
-    \right.
-  \end{equation*}
 \end{frame}
+
+\newcommand{\flvr}{\langle\bm{v}\rangle}
+\newcommand{\fbma}{\bm{\alpha}}
+\newcommand{\flar}{\langle\fbma\rangle}
+\newcommand{\fbmb}{\bm{\beta}}
+\newcommand{\flbr}{\langle\fbmb\rangle}
+
+\begin{frame}{Lexicographic Minimization}
+  \begin{definition}[Non-increasingly sorted \(\langle\bm{v}\rangle\)]
+    Let \(\flvr_k\) denote the \(k\)-th (\(1\leq k \leq K\)) largest elementof \(\bm{v}\in\mathbb{Z}^K\), implying \(\flvr_1\geq\flvr_2\dots\geq\flvr_K\). Then \(\bm{\flvr} = \left(\flvr_1, \flvr_2, \dots, \flvr_K\right)\) represents the non-increasingly sorted version of \(\bm{v}\).
+  \end{definition}
+  \begin{definition}[Lexicographically smaller vector]
+    For any \(\fbma\in\mathbb{Z}^K, \fbmb\in\mathbb{Z}^K\), if \(\flar_1\leq\flbr_1\) or \(\exists k\in \left\{1,2,\dots, K\right\}\) s.t. \(\flar_k\leq\flbr_k\) and \(\flar_i = \flbr_i, \forall i\in {1, \dots, k}\), then \(\fbma\) is lexicographically smaller than \(\fbmb\), denoted \(\fbma \preceq \fbmb\).
+  \end{definition}
+  \begin{definition}[Lexicographic minimization]
+    Lexicographic minimization of vector \(\bm{f}\) is represented with \(\text{lexmin}_{\bm{x}}\bm{f}\) with the optimal solution \(\bm{x^*}\in\mathbb{R}^K\) s.t. \(\forall \bm{x}\in\mathbb{R}^K: \bm{f}(\bm{x^*})\preceq\bm{f}(\bm{x})\)
+    \end{definition}
+  \end{frame}
 
 \newcommand{\foralltdk}{\forall i \in \mathcal{T}_k, \forall j\in\mathcal{D}, \forall k\in\mathcal{K}}
 \newcommand{\fcapacity}{\sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k} x^k_{i, j} \leq a_j}
@@ -131,7 +153,7 @@ maxcitenames=4
     &&& x^k_{i, j} \in \left\{0, 1\right\}. &\foralltdk\label{eq:onehot}
   \end{IEEEeqnarray}
 
-  Constraint \eqref{eq:goal}: a task requires as long as its longest job. \\
+  Constraint \eqref{eq:goal}: a job requires as long as its longest task. \\
   Constraint \eqref{eq:capacity}: capacity of the datacenter is not exceeded. \\
   Constraint \eqref{eq:presence}: each job is assigned to exactly one datacenter. \\
 \end{frame}
