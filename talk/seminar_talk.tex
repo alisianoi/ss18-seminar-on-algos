@@ -194,7 +194,7 @@ maxcitenames=4
   \pause
 
   \begin{equation*}
-        \phi (x^k_{i, j}) =_{df} x^k_{i, j} (c^k_{i, j} + e^k_{i, j}), \forall i\in\mathcal{T}_k, j\in \mathcal{D}, k\in\mathcal{K}
+        \text{Define: }\phi (x^k_{i, j}) = x^k_{i, j} (c^k_{i, j} + e^k_{i, j}), \forall i\in\mathcal{T}_k, j\in \mathcal{D}, k\in\mathcal{K}
   \end{equation*}
 
   \pause
@@ -208,9 +208,9 @@ maxcitenames=4
 
 \begin{frame}{Towards a Separable Objective Function}
   \begin{IEEEeqnarray*}{lCl}
-    g^m &=_{df}& \text{element of vector }\bm{g}\text{ at position }m \\
-    M &=_{df} & |\bm{g}| = J\sum_{k = 1}^{K}n_k \\
-    \varphi(\bm{g}) & =_{df} & \sum_{m = 1}^{M}M^{g_m}
+    \text{Define: }g^m &=& \text{element of vector }\bm{g}\text{ at position }m \\
+    \text{Define: }M &=& |\bm{g}| = J\sum_{k = 1}^{K}n_k \\
+    \text{Define: }\varphi(\bm{g}) &=& \sum_{m = 1}^{M}M^{g_m}
   \end{IEEEeqnarray*}
   \begin{lemma}
     \(\varphi(.)\) preserves the order of ``lexicographically no greater'' \(\preceq\), i.e.
@@ -218,7 +218,7 @@ maxcitenames=4
   \end{lemma}
 \end{frame}
 
-\begin{frame}{Separable Objective Function Achieved}
+\begin{frame}{Transformation Plan Complete}
   \begin{IEEEeqnarray}{ll}
     \min_{\bm{x}} & \quad \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k}\sum_{j\in\mathcal{D}} M^{\varphi(x^k_{i, j})} \\
     \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
@@ -241,7 +241,7 @@ maxcitenames=4
 
 \begin{frame}{Integrality Constraints Removed}
   \begin{IEEEeqnarray}{Cl}
-    \min_{\bm{x}} & \quad \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k}\sum_{j\in\mathcal{D}} \left(\fsmember\right) \\
+    \min_{\bm{x}, \bm{\lambda}} & \quad \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k}\sum_{j\in\mathcal{D}} \left(\fsmember\right) \\
     \text{s.t.}  & \quad x^k_{i, j} = \lambda^{k, 1}_{i, j}, \foralltdk \\
                  & \quad \flambdas = 1, \foralltdk \\
                  & \quad x^k_{i, j}, \lambda^{k, 0}_{i, j}, \lambda^{k, 1}_{i, j} \in \rplus, \foralltdk \\
