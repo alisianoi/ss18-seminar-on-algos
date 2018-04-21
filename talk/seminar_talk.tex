@@ -128,10 +128,10 @@ maxcitenames=4
 
 \begin{frame}{Lexicographic Minimization}
   \begin{definition}[Non-increasingly sorted \(\langle\bm{v}\rangle\)]
-    Let \(\flvr_k\) denote the \(k\)-th (\(1\leq k \leq K\)) largest elementof \(\bm{v}\in\mathbb{Z}^K\), implying \(\flvr_1\geq\flvr_2\dots\geq\flvr_K\). Then \(\bm{\flvr} = \left(\flvr_1, \flvr_2, \dots, \flvr_K\right)\) represents the non-increasingly sorted version of \(\bm{v}\).
+    Let \(\flvr_k\) denote the \(k\)-th (\(1\leq k \leq K\)) largest element of \(\bm{v}\in\mathbb{Z}^K\), implying \(\flvr_1\geq\flvr_2\dots\geq\flvr_K\). Then \(\bm{\flvr} = \left(\flvr_1, \flvr_2, \dots, \flvr_K\right)\) represents the non-increasingly sorted version of \(\bm{v}\).
   \end{definition}
   \begin{definition}[Lexicographically smaller vector]
-    For any \(\fbma\in\mathbb{Z}^K, \fbmb\in\mathbb{Z}^K\), if \(\flar_1\leq\flbr_1\) or \(\exists k\in \left\{1,2,\dots, K\right\}\) s.t. \(\flar_k\leq\flbr_k\) and \(\flar_i = \flbr_i, \forall i\in {1, \dots, k}\), then \(\fbma\) is lexicographically smaller than \(\fbmb\), denoted \(\fbma \preceq \fbmb\).
+    For any \(\fbma\in\mathbb{Z}^K, \fbmb\in\mathbb{Z}^K\), if \(\flar_1\leq\flbr_1\) or \(\exists k\in \left\{1,2,\dots, K\right\}\) s.t. \(\flar_k\leq\flbr_k\) and \(\flar_i = \flbr_i, \forall i\in [1, \dots, k)\), then \(\fbma\) is lexicographically smaller than \(\fbmb\), denoted \(\fbma \preceq \fbmb\).
   \end{definition}
   \begin{definition}[Lexicographic minimization]
     Lexicographic minimization of vector \(\bm{f}\) is represented with \(\text{lexmin}_{\bm{x}}\bm{f}\) with the optimal solution \(\bm{x^*}\in\mathbb{R}^K\) s.t. \(\forall \bm{x}\in\mathbb{R}^K: \bm{f}(\bm{x^*})\preceq\bm{f}(\bm{x})\)
@@ -155,15 +155,24 @@ maxcitenames=4
 
   Constraint \eqref{eq:goal}: a job requires as long as its longest task. \\
   Constraint \eqref{eq:capacity}: capacity of the datacenter is not exceeded. \\
-  Constraint \eqref{eq:presence}: each job is assigned to exactly one datacenter. \\
+  Constraint \eqref{eq:presence}: each task is assigned to exactly one datacenter. \\
 \end{frame}
 
 \begin{frame}{Transformation Plan}
   \begin{itemize}
-  \item Separable convex objective
-  \item Totally unimodular linear constraints
-  \item Apply \(\lambda\)-representation technique
+  \item Separable convex objective:
+    \begin{IEEEeqnarray*}{rCl}
+      f(x_1, x_2, \dots, x_K) &=& \sum_{i=1}^K f_i(x_i) \\
+      f(\alpha_1 x_1 + \alpha_2 x_2) &\leq& \alpha_1 f(x_1) + \alpha_2 f(x_2), \text{ where } \\
+      \alpha_1 + \alpha_2 &=& 1
+    \end{IEEEeqnarray*}
+  \item Totally unimodular linear constraints:
+    matrix \(M\) is a \emph{totally unimodular matrix} if its
+    every \emph{square submatrix} \(A\) has \(\det A\in \{-1, 0,
+    1\}\)
   \end{itemize}
+
+  Then apply \(\lambda\)-representation technique to compute solution \cite{Meyer1976}.
 \end{frame}
 
 \begin{frame}{Towards Single Objective and Linear Constraints}
