@@ -80,7 +80,7 @@ maxcitenames=4
 \begin{frame}{Problem Description}
     Given a \emph{large amount} of data distributed across
     \emph{geographically separate} datacenters, how to efficiently run
-    \emph{multiple analytical jobs} in a \emph{fair} fashion?
+    \emph{multiple analytic jobs} in a \emph{fair} fashion?
 \end{frame}
 
 \begin{frame}{Typical Analytic Jobs}
@@ -92,7 +92,7 @@ maxcitenames=4
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Factors to consider}
+\begin{frame}{Large Amounts of Data and Geography}
   \begin{itemize}
   \item Data locality
   \item Network speed
@@ -219,9 +219,10 @@ maxcitenames=4
 \end{frame}
 
 \begin{frame}{Transformation Plan Complete}
-  \newcounter{x}\setcounter{x}{\value{equation}}\setcounter{equation}{0}
+  \newcounter{x}\setcounter{x}{\value{equation}}\setcounter{equation}{5}
   \begin{IEEEeqnarray}{lrCll}
-    \text{lexmin}_{\bm{x}} & \bm{f} &=&\left(\tau_1, \tau_2, \dots, \tau_K\right) &\\
+    \min_{\bm{x}} &&& \max_{k\in\mathcal{K}}\left(\tau_k\right) \\
+    \setcounter{equation}{2}
     \text{s.t.} & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right), &\forall k\in\mathcal{K} \\
     &&& \fcapacity,  &\fcapacityq \\
     &&& \fpresence,  &\fpresenceq \\
@@ -261,6 +262,12 @@ maxcitenames=4
 \end{frame}
 
 \begin{frame}{Back to Multiobjective Optimization}
+  Subproblem produces \((k^*, i^*, j^*)\) with longest completion time
+  \\~\\
+  Set \(x^{k^*}_{i^*, j^*} = 1\) and \(x^{k^*}_{i^*, j} = 0, j\neq j^*\), remove from \(\bm{x}\)
+  \\~\\
+  Set completion times for \(x^{k^*}_{i, j}\), where \((i, j)\neq
+  (i^*, j^*)\), to the worst completion time
   \end{frame}
 
 \section{Experimental Evaluation}
