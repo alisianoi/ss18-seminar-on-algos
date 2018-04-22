@@ -219,6 +219,16 @@ maxcitenames=4
 \end{frame}
 
 \begin{frame}{Transformation Plan Complete}
+  \newcounter{x}\setcounter{x}{\value{equation}}\setcounter{equation}{0}
+  \begin{IEEEeqnarray}{lrCll}
+    \text{lexmin}_{\bm{x}} & \bm{f} &=&\left(\tau_1, \tau_2, \dots, \tau_K\right) &\\
+    \text{s.t.} & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right), &\forall k\in\mathcal{K} \\
+    &&& \fcapacity,  &\fcapacityq \\
+    &&& \fpresence,  &\fpresenceq \\
+    &&& x^k_{i, j} \in \left\{0, 1\right\}. &\foralltdk
+  \end{IEEEeqnarray}
+  \setcounter{equation}{\value{x}}
+
   \begin{IEEEeqnarray}{ll}
     \min_{\bm{x}} & \quad \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k}\sum_{j\in\mathcal{D}} M^{\varphi(x^k_{i, j})} \\
     \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
@@ -232,7 +242,7 @@ maxcitenames=4
 \begin{frame}{Towards Removing Integrality Constraints}
   Lambda representation technique:
   \begin{IEEEeqnarray}{lCl}
-    M^{\varphi\left(x^k_{i, j}\right)} &=& \sum_{s\in\{0,1\}} M^{s\left(c^k_{i, j} + e^k_{i, j}\right)}\lambda^{k, s}_{i, j} = \fsmember \\
+    M^{\varphi\left(x^k_{i, j}\right)} &=& \sum_{s\in\{0,1\}} \lambda^{k, s}_{i, j}M^{s\left(c^k_{i, j} + e^k_{i, j}\right)} = \fsmember \IEEEeqnarraynumspace\\
     x^k_{i, j} &=& \sum_{s\in\{0, 1\}}s\lambda^{k, s}_{i, j} = \lambda^{k, 1}_{i, j} \\
     \sum_{s\in\{0, 1\}} \lambda^{k, s}_{i, j} &=& \flambdas = 1 \\
     \lambda^{k, s}_{i, j} &\in& \rplus
