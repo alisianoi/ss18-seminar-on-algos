@@ -85,7 +85,7 @@ maxcitenames=4
 
 \begin{frame}{Typical Analytic Jobs}
   \begin{itemize}
-  \item 2007 The New York Times: ~4 TiB, <24 hours \\
+  \item 2007 The New York Times: ~4 TiB, less than 24 hours for 1 job \\
     (\href{https://open.blogs.nytimes.com/2007/11/01/self-service-prorated-super-computing-fun/}{online article}, last access 21.04.2018)
   \item 2017 ALS at Spotify: ~100 PiB, ~2500 nodes, ~20k jobs per day \\
     (\href{https://labs.spotify.com/2017/10/16/big-data-processing-at-spotify-the-road-to-scio-part-1/}{online article}, last access 21.04.2018)
@@ -272,7 +272,7 @@ maxcitenames=4
 
 \section{Experimental Evaluation}
 
-\begin{frame}{Architecture}
+\begin{frame}{Architecture (Apache Spark)}
   \begin{itemize}
   \item Describe computation job as a DAG of tasks, submit to DAG scheduler
   \item DAG scheduler divides DAG of tasks into stages, iteratively submits each stage to task scheduler
