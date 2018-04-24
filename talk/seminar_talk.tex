@@ -17,6 +17,7 @@
 \usepackage{booktabs}
 \usepackage{listings}
 \usepackage{appendixnumberbeamer}
+\usepackage{textcomp}
 
 \usepackage[
 backend=biber,
@@ -58,7 +59,6 @@ maxcitenames=4
 \begin{frame}{Seminar Talk's Main Sources}
   \begin{enumerate}
   \item \fullcite{Chen2017}
-  \item \fullcite{Meyer1976}
   \end{enumerate}
 \end{frame}
 
@@ -77,39 +77,49 @@ maxcitenames=4
 
 \section{Introduction}
 
-\begin{frame}{Problem Description}
-    Given a \emph{large amount} of data distributed across
-    \emph{geographically separate} datacenters, how to efficiently run
-    \emph{multiple analytic jobs} in a \emph{fair} fashion?
-\end{frame}
-
-\begin{frame}{Typical Analytic Jobs}
+\begin{frame}{Main Topic}
+  Running \emph{multiple} analytic jobs \emph{efficiently and fairly} when:
   \begin{itemize}
-  \item 2007 The New York Times: ~4 TiB, less than 24 hours for 1 job \\
-    (\href{https://open.blogs.nytimes.com/2007/11/01/self-service-prorated-super-computing-fun/}{online article}, last access 21.04.2018)
-  \item 2017 ALS at Spotify: ~100 PiB, ~2500 nodes, ~20k jobs per day \\
-    (\href{https://labs.spotify.com/2017/10/16/big-data-processing-at-spotify-the-road-to-scio-part-1/}{online article}, last access 21.04.2018)
+  \item each job requires a \emph{large amount of data} to run
+  \item the data is stored in \emph{geographically distributed} datacenters
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Large Amounts of Data and Geography}
-  \begin{itemize}
-  \item Data locality
-  \item Network speed
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Fairness}
-  \emph{Fairness}: all the participants get a fair share of the
-  resources.
+\begin{frame}{Important Factors}
+  Geographic separation and a lot of data \textrightarrow{} \emph{network speed}
   \\~\\
-  \emph{Max-Min fairness}: any attempt to increase any participant's
-  share decreases some non-larger share of another participant.
+  Multiple concurrent jobs \textrightarrow{} \emph{fair resource allocation}
 \end{frame}
 
-\section{Model and Formulation}
+\begin{frame}{Main Contribution}
+  A scheduling algorithm that in practice outperforms the default Apache Spark task scheduler under the following conditions:
+  \begin{itemize}
+  \item multiple concurrent jobs must be scheduled
+  \item cluster workers are geographically separated
+  \item external resource managers not present (e.g. YARN)
+    \end{itemize}
+\end{frame}
 
-\begin{frame}{Background Definitions}
+%% \begin{frame}{Typical Analytic Jobs}
+%%   \begin{itemize}
+%%   \item 2007 The New York Times: ~4 TiB, less than 24 hours for 1 job \\
+%%     (\href{https://open.blogs.nytimes.com/2007/11/01/self-service-prorated-super-computing-fun/}{online article}, last access 21.04.2018)
+%%   \item 2017 ALS at Spotify: ~100 PiB, ~2500 nodes, ~20k jobs per day \\
+%%     (\href{https://labs.spotify.com/2017/10/16/big-data-processing-at-spotify-the-road-to-scio-part-1/}{online article}, last access 21.04.2018)
+%%   \end{itemize}
+%% \end{frame}
+
+%% \begin{frame}{Fairness}
+%%   \emph{Fairness}: all the participants get a fair share of the
+%%   resources.
+%%   \\~\\
+%%   \emph{Max-Min fairness}: any attempt to increase any participant's
+%%   share decreases some non-larger share of another participant.
+%% \end{frame}
+
+\section{Scheduling Algorithm}
+
+\begin{frame}{Some Notation}
   \begin{IEEEeqnarray*}{llCl}
     \text{Datacenter: }                 & \mathcal{D}   &=& \left\{1, 2, \dots, J\right\} \\
     \text{Datacenter capacity: }        & \mathcal{A}   &=& \left\{a_1, a_2, \dots, a_J\right\} \\
@@ -144,7 +154,7 @@ maxcitenames=4
 \newcommand{\fpresence}{\sum_{j\in\mathcal{D}}x^k_{i, j} = 1}
 \newcommand{\fpresenceq}{\forall i\in\mathcal{T}_k, \forall k\in\mathcal{K}}
 
-\begin{frame}{First Optimization Problem}
+\begin{frame}{Initial Optimization Problem}
   \begin{IEEEeqnarray}{lrCll}
     \text{lexmin}_{\bm{x}} & \bm{f} &=&\left(\tau_1, \tau_2, \dots, \tau_K\right) &\\
     \text{s.t.} & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right), &\forall k\in\mathcal{K} \label{eq:goal}\\
@@ -158,22 +168,142 @@ maxcitenames=4
   Constraint \eqref{eq:presence}: each task is assigned to exactly one datacenter. \\
 \end{frame}
 
-\begin{frame}{Transformation Plan}
+\begin{frame}{Target Class of Optimization Problems}
+  If optimization problem fulfills the following requirements:
   \begin{itemize}
-  \item Separable convex objective:
-    \begin{IEEEeqnarray*}{rCl}
-      f(x_1, x_2, \dots, x_K) &=& \sum_{i=1}^K f_i(x_i) \\
-      f(\alpha_1 x_1 + \alpha_2 x_2) &\leq& \alpha_1 f(x_1) + \alpha_2 f(x_2), \text{ where } \\
-      \alpha_1 + \alpha_2 &=& 1
-    \end{IEEEeqnarray*}
-  \item Totally unimodular linear constraints:
-    matrix \(M\) is a \emph{totally unimodular matrix} if its
-    every \emph{square submatrix} \(A\) has \(\det A\in \{-1, 0,
-    1\}\)
+  \item separable convex objective function
+  \item totally unimodular linear constraints
   \end{itemize}
+  then apply \(\lambda\)-representation and compute solution, see \textcite{Meyer1976}.
 
-  Then apply \(\lambda\)-representation technique to compute solution \cite{Meyer1976}.
+  \pause
+  \begin{definition}[Separable function]
+    \begin{center}
+      \(f(x_1, x_2, \dots, x_K) = \sum_{i=1}^K f_i(x_i)\)
+    \end{center}
+  \end{definition}
+  \begin{definition}[Convex function]
+    \(\forall x_1, x_2 \in\bm{X},\forall t\in[0, 1]: f(tx_1 + (1 - t)x_2)\leq tf(x_1) + (1 - t)f(x_2)\)
+  \end{definition}
+  \begin{definition}[Totally unimodular matrix]
+    Matrix \(M\) is a \emph{totally unimodular matrix} if its
+    every \emph{square submatrix} \(A\) has \(\det A\in \{-1, 0,
+    1\}\)    
+    \end{definition}
 \end{frame}
+
+\newcommand{\flambdas}{\lambda^{k, 0}_{i, j} + \lambda^{k, 1}_{i, j}}
+\newcommand{\fsmember}{\flambdas M^{\left(c^k_{i, j} + e^k_{i, j}\right)}}
+\newcommand{\rplus}{\mathbf{R}^{+}}
+
+\begin{frame}{Final Optimization Subproblem}
+  \begin{IEEEeqnarray*}{Cl}
+    \min_{\bm{x}, \bm{\lambda}} & \quad \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k}\sum_{j\in\mathcal{D}} \left(\fsmember\right) \\
+    \text{s.t.}  & \quad x^k_{i, j} = \lambda^{k, 1}_{i, j}, \foralltdk \\
+                 & \quad \flambdas = 1, \foralltdk \\
+                 & \quad x^k_{i, j}, \lambda^{k, 0}_{i, j}, \lambda^{k, 1}_{i, j} \in \rplus, \foralltdk \\
+    & \quad \fcapacity, \fcapacityq \\
+    & \quad \fpresence, \fpresenceq
+  \end{IEEEeqnarray*}
+\end{frame}
+
+\section{Experimental Evaluation}
+
+\begin{frame}{Experiment Architecture: Apache Spark}
+  \begin{center}
+  \includegraphics[width=\textwidth]{experiment_arch}\\
+  image source: \textcite{Chen2017}
+  \end{center}
+  \end{frame}
+
+\begin{frame}{Experiment Execution}
+  \begin{itemize}
+  \item Amazon EC2, 6 datacenters, 2 VMs of type \texttt{m3.large} each
+  \item Ubuntu Server 14.04 LTS, Spark 1.6.1, Hadoop 2.6.4, Java 1.8, Scala 2.11.8
+  \item Spark cluster in standalone mode, no external resource manager (e.g. YARN)
+  \item Analytic job is legacy \texttt{Sort}:
+    \begin{itemize}
+    \item 3 tasks in parallel
+    \item 100 MiB of data per task
+    \item all data in different datacenters
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Experimental Results}
+  \begin{center}
+  \includegraphics[width=1.03\textwidth]{main_result}\\
+  image source: \textcite{Chen2017}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Time to Compute Assignments}
+  \begin{center}
+  \includegraphics[width=1\textwidth]{algo_time}\\
+  image source: \textcite{Chen2017}
+  \end{center}
+\end{frame}
+
+
+\section{Conclusions}
+
+\begin{frame}
+  \frametitle{Conclusions}
+  \begin{itemize}
+  \item Outperformed default task scheduler of Apache Spark
+  \item Nice transformation of an optimization problem
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{References}
+\printbibliography
+\end{frame}
+
+\appendix
+
+\section{Matrix Definitions and Properties}
+
+\begin{frame}{Unimodular Matrix}
+  \begin{definition}[Unimodular Matrix]
+    Matrix \(M\) is a \emph{unimodular matrix} if it is a \emph{square}, \emph{integer} matrix with \[\det M = \pm 1\]
+  \end{definition}
+  \begin{definition}[Unimodular Matrix]
+    Matrix \(M\) is a \emph{unimodular matrix} if it is an
+    \emph{integer}, \emph{invertible} matrix and its inverse is also
+    an \emph{integer}, \emph{invertible} matrix.
+  \end{definition}
+  Examples: identity matrix, \emph{permutation matrix}, pascal matrix, \dots
+\end{frame}
+
+\begin{frame}{Totally Unimodular Matrix}
+  \begin{definition}{Totally Unimodular Matrix}
+    Matrix \(M\) is a \emph{totally unimodular matrix} if its every
+    non-singular square submatrix is unimodular.
+  \end{definition}
+
+  \begin{definition}{Totally Unimodular Matrix}
+    Matrix \(M\) is a \emph{totally unimodular matrix} if its every
+    \emph{square submatrix} \(A\) has \(\det A\in \{-1, 0, 1\}\)
+  \end{definition}
+
+  \begin{definition}{Totally Unimodular Matrix}
+    Matrix \(A\) is a \emph{totally unimodular matrix} if its every
+    element \(A_{i, j}\in \{-1, 0, 1\}\) and any row subset \(R\) can
+    be divided into two disjoint subsets \(R_1\) and \(R_2\) s.t.
+    \[\left|\sum_{i\in R_1} a_{i, j} - \sum_{i\in R_2}a_{i, j}\right| \leq 1, \forall j\in{1, 2, \dots, n}\]
+    \end{definition}
+\end{frame}
+
+\begin{frame}{Totally Unimodular Matrices in Optimization}
+  Important well-known optimization fact: if \(M\) is totally
+  unimodular and \(b\) is integral, then linear programs \(\left\{\min
+  cx | Mx \geq b, x\geq 0\right\}\) and \(\{\max cx | Mx \leq b\}\)
+  have integral optima for any \(c\).
+\end{frame}
+
+\section{Equivalent Transformation Overview}
 
 \begin{frame}{Towards Single Objective and Linear Constraints}
   From multiple-objective to single-objective optimization:
@@ -236,10 +366,6 @@ maxcitenames=4
   \end{IEEEeqnarray}
 \end{frame}
 
-\newcommand{\flambdas}{\lambda^{k, 0}_{i, j} + \lambda^{k, 1}_{i, j}}
-\newcommand{\fsmember}{\flambdas M^{\left(c^k_{i, j} + e^k_{i, j}\right)}}
-\newcommand{\rplus}{\mathbf{R}^{+}}
-
 \begin{frame}{Towards Removing Integrality Constraints}
   Lambda representation technique:
   \begin{IEEEeqnarray}{lCl}
@@ -269,94 +395,5 @@ maxcitenames=4
   Set completion times for \(x^{k^*}_{i, j}\), where \((i, j)\neq
   (i^*, j^*)\), to the worst completion time
   \end{frame}
-
-\section{Experimental Evaluation}
-
-\begin{frame}{Architecture (Apache Spark)}
-  \begin{itemize}
-  \item Describe computation job as a DAG of tasks, submit to DAG scheduler
-  \item DAG scheduler divides DAG of tasks into stages, iteratively submits each stage to task scheduler
-  \item Task scheduler reimplemented to solve the optimization problem
-  \item Example problem is legacy \texttt{Sort}, 3 tasks per job, each
-    task starts with 100 MiB of data in its datacenter. Measured
-    groups of 3, 4 and 5 concurrent jobs
-  \end{itemize}
-  \end{frame}
-
-\begin{frame}{Execution}
-  \begin{itemize}
-  \item Across 6 datacenters of Amazon EC2 spin up 2 \texttt{m3.large} VMs in each
-  \item Ubuntu Server 14.04 LTS, Spark 1.6.1, Hadoop 2.6.4, Java 1.8, Scala 2.11.8
-  \item Spark cluster in standalone mode, no external resource manager (e.g. YARN)
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Experimental Results}
-  \begin{center}
-  \includegraphics[width=\textwidth]{main_result}\\
-  image source: \textcite{Chen2017}
-  \end{center}
-\end{frame}
-
-\section{Conclusions}
-
-\begin{frame}
-  \frametitle{Conclusions}
-  \begin{itemize}
-  \item Reproducibility problems:
-    \begin{itemize}
-    \item No source code
-    \item Could not find legacy \texttt{Sort} application
-    \end{itemize}
-  \item Not clear how the 4 and 5 job variants differ:
-  \item Convincingly outperformed default Spark scheduler
-  \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]{References}
-\printbibliography
-\end{frame}
-
-\appendix
-
-\begin{frame}{Unimodular Matrix}
-  \begin{definition}[Unimodular Matrix]
-    Matrix \(M\) is a \emph{unimodular matrix} if it is a \emph{square}, \emph{integer} matrix with \[\det M = \pm 1\]
-  \end{definition}
-  \begin{definition}[Unimodular Matrix]
-    Matrix \(M\) is a \emph{unimodular matrix} if it is an
-    \emph{integer}, \emph{invertible} matrix and its inverse is also
-    an \emph{integer}, \emph{invertible} matrix.
-  \end{definition}
-  Examples: identity matrix, \emph{permutation matrix}, pascal matrix, \dots
-\end{frame}
-
-\begin{frame}{Totally Unimodular Matrix}
-  \begin{definition}{Totally Unimodular Matrix}
-    Matrix \(M\) is a \emph{totally unimodular matrix} if its every
-    non-singular square submatrix is unimodular.
-  \end{definition}
-
-  \begin{definition}{Totally Unimodular Matrix}
-    Matrix \(M\) is a \emph{totally unimodular matrix} if its every
-    \emph{square submatrix} \(A\) has \(\det A\in \{-1, 0, 1\}\)
-  \end{definition}
-
-  \begin{definition}{Totally Unimodular Matrix}
-    Matrix \(A\) is a \emph{totally unimodular matrix} if its every
-    element \(A_{i, j}\in \{-1, 0, 1\}\) and any row subset \(R\) can
-    be divided into two disjoint subsets \(R_1\) and \(R_2\) s.t.
-    \[\left|\sum_{i\in R_1} a_{i, j} - \sum_{i\in R_2}a_{i, j}\right| \leq 1, \forall j\in{1, 2, \dots, n}\]
-    \end{definition}
-\end{frame}
-
-\begin{frame}{Totally Unimodular Matrices in Optimization}
-  Important well-known optimization fact: if \(M\) is totally
-  unimodular and \(b\) is integral, then linear programs \(\left\{\min
-  cx | Mx \geq b, x\geq 0\right\}\) and \(\{\max cx | Mx \leq b\}\)
-  have integral optima for any \(c\).
-\end{frame}
 
 \end{document}
