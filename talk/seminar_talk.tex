@@ -10,7 +10,8 @@
 \usepackage{bm}
 \usepackage{hyperref}
 \tolerance=1000
-\usepackage{algorithm}
+%% \usepackage{algorithm}
+\usepackage{algorithm2e}
 \usepackage{algpseudocode}
 \usepackage{tikz}
 \usepackage{xspace}
@@ -40,6 +41,9 @@ maxcitenames=4
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{bibliography item}[text]
 \usetheme{TUW}
+
+\DeclareMathOperator*{\argmin}{\arg\!\min}
+\DeclareMathOperator*{\argmax}{\arg\!\max}
 
 \newcommand{\semname}{Scheduling Algorithms for Clusters, Distributed Systems, and Multi-core Nodes}
 \newcommand{\semester}{SS 2018}
@@ -76,6 +80,12 @@ maxcitenames=4
 %% \end{frame}
 
 \section{Introduction}
+\begin{frame}{Scheduling Problem}
+  \begin{center}
+  \includegraphics[width=0.8\textwidth]{fig1}\\
+  image source: \textcite{Chen2017}
+  \end{center}
+\end{frame}
 
 \begin{frame}{Main Topic}
   Running \emph{multiple} analytic jobs \emph{efficiently and fairly} when:
@@ -168,7 +178,7 @@ maxcitenames=4
   Constraint \eqref{eq:presence}: each task is assigned to exactly one datacenter. \\
 \end{frame}
 
-\begin{frame}{Target Class of Optimization Problems}
+\begin{frame}{Tractable Class of Optimization Problems}
   If optimization problem fulfills the following requirements:
   \begin{itemize}
   \item separable convex objective function
@@ -196,15 +206,34 @@ maxcitenames=4
 \newcommand{\fsmember}{\flambdas M^{\left(c^k_{i, j} + e^k_{i, j}\right)}}
 \newcommand{\rplus}{\mathbf{R}^{+}}
 
-\begin{frame}{Final Optimization Subproblem}
-  \begin{IEEEeqnarray*}{Cl}
-    \min_{\bm{x}, \bm{\lambda}} & \quad \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k}\sum_{j\in\mathcal{D}} \left(\fsmember\right) \\
-    \text{s.t.}  & \quad x^k_{i, j} = \lambda^{k, 1}_{i, j}, \foralltdk \\
-                 & \quad \flambdas = 1, \foralltdk \\
-                 & \quad x^k_{i, j}, \lambda^{k, 0}_{i, j}, \lambda^{k, 1}_{i, j} \in \rplus, \foralltdk \\
-    & \quad \fcapacity, \fcapacityq \\
-    & \quad \fpresence, \fpresenceq
-  \end{IEEEeqnarray*}
+%% \begin{frame}{Final Optimization Subproblem}
+%%   \begin{IEEEeqnarray*}{Cl}
+%%     \min_{\bm{x}, \bm{\lambda}} & \quad \sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k}\sum_{j\in\mathcal{D}} \left(\fsmember\right) \\
+%%     \text{s.t.}  & \quad x^k_{i, j} = \lambda^{k, 1}_{i, j}, \foralltdk \\
+%%                  & \quad \flambdas = 1, \foralltdk \\
+%%                  & \quad x^k_{i, j}, \lambda^{k, 0}_{i, j}, \lambda^{k, 1}_{i, j} \in \rplus, \foralltdk \\
+%%     & \quad \fcapacity, \fcapacityq \\
+%%     & \quad \fpresence, \fpresenceq
+%%   \end{IEEEeqnarray*}
+%% \end{frame}
+
+\begin{frame}{Proposed Scheduling Algorithm}
+  \begin{algorithm}[H]
+    \SetKwInOut{Input}{Input}
+    \SetKwInOut{Output}{Output}
+    \Input{Data distribution \(d^{k, s}_i\), inter-datacenter bandwidth \(b_{s, j}\), execution time \(e_{i, j}^k\), datacenter capacities \(a_j\)}
+    \Output{Task assignment \(x_{i, j}^k\)}
+
+    Initialize \(\mathcal{K}' = \mathcal{K}\); \\
+    \While{\(\mathcal{K}' \neq \emptyset\)} {
+      Solve the tractable LP problem, obtain assignment \(\bm{x}\); \\
+      Find largest completion time: \(x_{i^*, j^*}^{k^*} = \argmax\limits_{x_{i, j}^k \in\bm{x}}\phi\left(x_{i, j}^k\right)\); \\
+      Fix \(x_{i^*, j}^{k^*},\forall j\in\mathcal{D}\); Remove them from \(\bm{x}\); \\
+      Reduce resource capacity of the corresponding datacenter; \\
+      Set \(\phi\left(x^{k^*}_{i, j}\right) = x^{k^*}_{i, j}\left(c^{k^*}_{i^*, j^*} + e^{k^*}_{i^*, j^*}\right),\forall i\in \mathcal{T}_{k^*}, \forall j\in \mathcal{D}\); \\
+      Remove \(k^*\) from \(\mathcal{K}'\)
+    }
+  \end{algorithm}
 \end{frame}
 
 \section{Experimental Evaluation}
