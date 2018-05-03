@@ -144,7 +144,7 @@ maxcitenames=4
       \IEEEstrut
     \end{IEEEeqnarraybox}
     \right. \\
-    \text{Completion time: } & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}}x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right)
+    \text{Worst completion time: } & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}}x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right)
   \end{IEEEeqnarray*}
 \end{frame}
 
@@ -243,13 +243,13 @@ maxcitenames=4
     \Input{Data distribution \(d^{k, s}_i\), inter-datacenter bandwidth \(b_{s, j}\), execution time \(e_{i, j}^k\), datacenter capacities \(a_j\)}
     \Output{Task assignment \(x_{i, j}^k\)}
 
-    Initialize \(\mathcal{K}' = \mathcal{K}\); \\
+    Initialize \(\mathcal{K}' = \mathcal{K}\) \\
     \While{\(\mathcal{K}' \neq \emptyset\)} {
-      Solve the tractable LP problem, obtain assignment \(\bm{x}\); \\
-      Find largest completion time: \(x_{i^*, j^*}^{k^*} = \argmax\limits_{x_{i, j}^k \in\bm{x}}\phi\left(x_{i, j}^k\right)\); \\
-      Fix \(x_{i^*, j}^{k^*},\forall j\in\mathcal{D}\); Remove them from \(\bm{x}\); \\
-      Reduce resource capacity of the corresponding datacenter; \\
-      Set \(\phi\left(x^{k^*}_{i, j}\right) = x^{k^*}_{i, j}\left(c^{k^*}_{i^*, j^*} + e^{k^*}_{i^*, j^*}\right),\forall i\in \mathcal{T}_{k^*}, \forall j\in \mathcal{D}\); \\
+      Solve the tractable LP problem, obtain assignment \(\bm{x}\) \\
+      Find largest completion time: \[x_{i^*, j^*}^{k^*} = \argmax\limits_{x_{i, j}^k \in\bm{x}} x_{i, j}^k\left(c^k_{i, j} + e^k_{i, j}\right)\] \\
+      Fix \(x_{i^*, j}^{k^*},\forall j\in\mathcal{D}\); Remove them from \(\bm{x}\) \\
+      Reduce resource capacity of the corresponding datacenter \\
+      Set \(\phi\left(x^{k^*}_{i, j}\right) = x^{k^*}_{i, j}\left(c^{k^*}_{i^*, j^*} + e^{k^*}_{i^*, j^*}\right),\forall i\in \mathcal{T}_{k^*}, \forall j\in \mathcal{D}\) \\
       Remove \(k^*\) from \(\mathcal{K}'\)
     }
   \end{algorithm}
@@ -276,6 +276,20 @@ maxcitenames=4
     \item all data in different datacenters
     \end{itemize}
   \end{itemize}
+\end{frame}
+
+\begin{frame}{Experiment Topology}
+  \begin{center}
+  \includegraphics[width=1\textwidth]{alloc}\\
+  image source: \textcite{Chen2017}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Datacenter Speeds}
+  \begin{center}
+  \includegraphics[width=1\textwidth]{speed}\\
+  table source: \textcite{Chen2017}
+  \end{center}
 \end{frame}
 
 \begin{frame}
