@@ -135,8 +135,16 @@ maxcitenames=4
     \text{Datacenter capacity: }        & \mathcal{A}   &=& \left\{a_1, a_2, \dots, a_J\right\} \\
     \text{Analytic job: }               & \mathcal{K}   &=& \left\{1, 2, \dots, K\right\} \\
     \text{Parallel tasks of a job: }    & \mathcal{T}_k &=& \left\{1, 2, \dots, n_k\right\} \\
-    \text{Execution time of a task: }                 & e^k_{i, j} \\
-    \text{Network transfer time of a task: } & c^k_{i, j}
+    \text{Execution time of a task: }        & e^k_{i, j} \\
+    \text{Transfer time of a task: } & c^k_{i, j} &=&\left\{ \,
+    \begin{IEEEeqnarraybox}[][c]{l?s}
+      \IEEEstrut
+      0, &  when \(S^k_i = \left\{j\right\}\)\\
+      \max_{s\in S^k_i, s\neq j}\left(\frac{d^{k, s}_i}{b_{s,j}}\right) & otherwise
+      \IEEEstrut
+    \end{IEEEeqnarraybox}
+    \right. \\
+    \text{Completion time: } & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}}x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right)
   \end{IEEEeqnarray*}
 \end{frame}
 
@@ -176,6 +184,17 @@ maxcitenames=4
   Constraint \eqref{eq:goal}: a job requires as long as its longest task. \\
   Constraint \eqref{eq:capacity}: capacity of the datacenter is not exceeded. \\
   Constraint \eqref{eq:presence}: each task is assigned to exactly one datacenter. \\
+\end{frame}
+
+\begin{frame}{Why is this not tractable?}
+  \begin{itemize}
+  \item Multi-objective optimization
+  \item Constraints:
+    \begin{itemize}
+    \item Contain a maximum function
+    \item Contain integral constraints
+    \end{itemize}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{Tractable Class of Optimization Problems}
