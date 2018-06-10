@@ -1,5 +1,8 @@
 % !TEX root = template.tex
 
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
 \section{Introduction}
 
 Here goes the introduction. We also cite the nice book by \citet{Pinedo:2012}.
@@ -16,7 +19,7 @@ In this work, \citet{Dolev97} presented the first bounded implementation of a co
 
 \citet*{Chen2017} define \(\mathcal{D} = \left\{1, 2, \dots, J\right\}\) to be the set whose elements are individual datacenters and the entire set itself represents one large geographically distributed datacenter. Each individual datacenter \(i\) has a limited number of computing slots denoted by \(a_i\). Furthermore, the set of analytic jobs is defined as \(\mathcal{K} = \left\{1, 2, \dots, K\right\}\). Each of the jobs \(k\) consists of a single stage which itself is a set of independent tasks \(\mathcal{T}_k=\left\{1, 2, \dots, n_k\right\}\).
 
-In the proposed theoretical model the time it takes to complete a job is the \emph{longest} time one if its independent tasks takes to complete. In turn, the completion time of a task is the sum \(e^{k}_{i, j} + c^{k}_{i, j}\), where the first summand is the \emph{execution time} and the second --- \emph{network transfer time}. For both of them, index \(i\) is the analytic job, index \(k\) is the task from that job and index \(j\) is the index of the datacenter to which the task is assigned. The execution time for any possible assignment is assumed to be known in advance. The network transfer time, on the other hand, is calculated in a slightly more complicated fashion. Task \(k\) of job \(i\) requires input data that is stored by a set of individual datacenters \(S^k_i\). More specifically, for each datacenter \(s\in S^k_i\) the volume of input data is \(d^{k, s}_i\). Assuming \(s\neq j\), the bandwidth between these two datacenters is \(b_{s, j}\). Then the following formula computes network transfer time:
+In the proposed theoretical model the time it takes to complete a job is the \emph{longest} time one if its independent tasks takes to complete. In turn, the completion time of a task is the sum \(e^{k}_{i, j} + c^{k}_{i, j}\), where the first summand is the \emph{execution time} and the second --- \emph{network transfer time}. For both of them, index \(i\) is the analytic job, index \(k\) is the task from that job and index \(j\) is the index of the datacenter to which the task is assigned. The execution time for any possible assignment is assumed to be known in advance. The network transfer time, on the other hand, is calculated in the following fashion. Task \(k\) of job \(i\) requires input data that is stored by a set of individual datacenters \(S^k_i\). More specifically, for each datacenter \(s\in S^k_i\) the volume of input data is \(d^{k, s}_i\). Assuming \(s\neq j\), the bandwidth between these two datacenters is \(b_{s, j}\). Then the following formula computes network transfer time:
 
 \begin{IEEEeqnarray*}{lCl}
   c^k_{i, j} &=&\left\{ \,
@@ -29,9 +32,47 @@ In the proposed theoretical model the time it takes to complete a job is the \em
   \right. \\
 \end{IEEEeqnarray*}
 
+The completion time of a task depends on the datacenter which executes that task. This task assignment is captured by the variable \(x^{k}_{i, j}\). More specifically, \(x^k_{i, j} = 1\) when task \(k\) of job \(i\) is assigned to datacenter \(j\) and otherwise \(x^k_{i, j} = 0\). This leads to the following formula of the completion time of a job:
 
+\[\tau_k = \max_{i\in\mathcal{T}_k, j\in\mathcal{D}}x^k_{i, j}\left(e^k_{i, j} + c^k_{i, j}\right)\]
 
 \subsection{Optimization Problem}
+
+\citet*{Chen2017} introduce the following definitions before producing the first optimization problem.
+
+\newcommand{\flvr}{\langle\mathbf{v}\rangle}
+\newcommand{\fbma}{\mathbf{\alpha}}
+\newcommand{\flar}{\langle\fbma\rangle}
+\newcommand{\fbmb}{\mathbf{\beta}}
+\newcommand{\flbr}{\langle\fbmb\rangle}
+
+\begin{definition}[Non-increasingly sorted \(\flvr\)]
+  Let \(\flvr_k\) denote the \(k\)-th (\(1\leq k \leq K\)) largest element of \(\mathbf{v}\in\mathbb{Z}^K\), implying \(\flvr_1\geq\flvr_2\geq\ldots\geq\flvr_K\). Then \(\mathbf{\flvr} = \left(\flvr_1, \flvr_2, \dots, \flvr_K\right)\) represents the non-increasingly sorted version of \(\mathbf{v}\).
+\end{definition}
+\begin{definition}[Lexicographically smaller vector]
+  For any \(\fbma\in\mathbb{Z}^K, \fbmb\in\mathbb{Z}^K\), if \(\flar_1\leq\flbr_1\) or \(\exists k\in \left\{1,2,\dots, K\right\}\) s.t. \(\flar_k\leq\flbr_k\) and \(\flar_i = \flbr_i, \forall i\in [1, \dots, k)\), then \(\fbma\) is lexicographically smaller than \(\fbmb\), denoted \(\fbma \preceq \fbmb\).
+\end{definition}
+\begin{definition}[Lexicographic minimization]
+  Lexicographic minimization of vector \(\mathbf{f}\) is represented with \(\text{lexmin}_{\mathbf{x}}\mathbf{f}\) with the optimal solution \(\mathbf{x^*}\in\mathbb{R}^K\) s.t. \(\forall \mathbf{x}\in\mathbb{R}^K: \mathbf{f}(\mathbf{x^*})\preceq\mathbf{f}(\mathbf{x})\)
+\end{definition}
+
+With the above definitions in place, \citet*{Chen2017} present the following optimization problem:
+
+\newcommand{\foralltdk}{\forall i \in \mathcal{T}_k, \forall j\in\mathcal{D}, \forall k\in\mathcal{K}}
+\newcommand{\fcapacity}{\sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k} x^k_{i, j} \leq a_j}
+\newcommand{\fcapacityq}{\forall j\in\mathcal{D}}
+\newcommand{\fpresence}{\sum_{j\in\mathcal{D}}x^k_{i, j} = 1}
+\newcommand{\fpresenceq}{\forall i\in\mathcal{T}_k, \forall k\in\mathcal{K}}
+
+\begin{IEEEeqnarray}{lrCll}
+  \text{lexmin}_{\mathbf{x}} & \mathbf{f} &=&\left(\tau_1, \tau_2, \dots, \tau_K\right) &\\
+  \text{s.t.} & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right), &\forall k\in\mathcal{K} \label{eq:goal}\\
+  &&& \fcapacity,  &\fcapacityq\label{eq:capacity}\\
+  &&& \fpresence,  &\fpresenceq\label{eq:presence}\\
+  &&& x^k_{i, j} \in \left\{0, 1\right\}. &\foralltdk\label{eq:onehot}
+\end{IEEEeqnarray}
+
+
 \subsection{Proposed Scheduling Algorithm}
 
 %% Table~\ref{tab:related_algorithms} shows a summary of related algorithms.
