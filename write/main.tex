@@ -3,6 +3,9 @@
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 
+\theoremstyle{definition}
+\newtheorem{optimization}{Optimization Problem}
+
 \section{Introduction}
 
 Here goes the introduction. We also cite the nice book by \citet{Pinedo:2012}.
@@ -47,6 +50,7 @@ The completion time of a task depends on the datacenter which executes that task
 \newcommand{\flbr}{\langle\fbmb\rangle}
 
 \begin{definition}[Non-increasingly sorted \(\flvr\)]
+  \label{def:def1}
   Let \(\flvr_k\) denote the \(k\)-th (\(1\leq k \leq K\)) largest element of \(\mathbf{v}\in\mathbb{Z}^K\), implying \(\flvr_1\geq\flvr_2\geq\ldots\geq\flvr_K\). Then \(\mathbf{\flvr} = \left(\flvr_1, \flvr_2, \dots, \flvr_K\right)\) represents the non-increasingly sorted version of \(\mathbf{v}\).
 \end{definition}
 \begin{definition}[Lexicographically smaller vector]
@@ -64,16 +68,54 @@ With the above definitions in place, \citet*{Chen2017} present the following opt
 \newcommand{\fpresence}{\sum_{j\in\mathcal{D}}x^k_{i, j} = 1}
 \newcommand{\fpresenceq}{\forall i\in\mathcal{T}_k, \forall k\in\mathcal{K}}
 
-\begin{IEEEeqnarray}{lrCll}
-  \text{lexmin}_{\mathbf{x}} & \mathbf{f} &=&\left(\tau_1, \tau_2, \dots, \tau_K\right) &\\
-  \text{s.t.} & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right), &\forall k\in\mathcal{K} \label{eq:goal}\\
-  &&& \fcapacity,  &\fcapacityq\label{eq:capacity}\\
-  &&& \fpresence,  &\fpresenceq\label{eq:presence}\\
-  &&& x^k_{i, j} \in \left\{0, 1\right\}. &\foralltdk\label{eq:onehot}
-\end{IEEEeqnarray}
+\begin{optimization}
+  \label{opt:opt1}
+  \begin{IEEEeqnarray}{lrCll}
+    \text{lexmin}_{\mathbf{x}} & \mathbf{f} &=&\left(\tau_1, \tau_2, \dots, \tau_K\right) \label{eq:cost}&\\
+    \text{s.t.} & \tau_k &=& \max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right), &\forall k\in\mathcal{K} \label{eq:goal}\\
+    &&& \fcapacity,  &\fcapacityq\label{eq:capacity}\\
+    &&& \fpresence,  &\fpresenceq\label{eq:presence}\\
+    &&& x^k_{i, j} \in \left\{0, 1\right\}. &\foralltdk\label{eq:onehot}
+  \end{IEEEeqnarray}
+\end{optimization}
 
+Optimization Problem~\ref{opt:opt1} begins by choosing an assignment of tasks to datacenters. This assignment is captured by the values of \(x^k_{i, j}\) and must satisfy constraints \eqref{eq:capacity},\eqref{eq:presence},\eqref{eq:onehot}. In particular, constraint \eqref{eq:capacity} ensures that every datacenter is not assigned more tasks than it has available computing slots. Constraint \eqref{eq:presence} guarantees that each task is assigned to exactly one datacenter. Finally, constraint \eqref{eq:onehot} captures the fact that \(x^k_{i, j}\) is an indicator variable which is equal to one if and only if task \(k\) from job \(i\) is assigned to datacenter \(j\). Once these constraints are satisfied, constraint \eqref{eq:goal} shows how to compute the completion time of job \(k\). Finally, the cost function \eqref{eq:cost} is an instance of lexicographic minimization which collects the job completion times into a vector whose coordinates are ordered from largest to smallest. By repeatedly choosing assignments that satisfy the constraints, several such vectors are produced. By choosing the lexicographically smallest vector, it is guaranteed that the largest (i.e. slowest) job completion time is not larger than that from all the other vectors. Among all of the vectors with the same largest job completion time, the vector with the smallest second-largest job completion time is chosen, and so on. This means that the solution to the optimization problem is the task assignment that minimizes all of the job completion times.
+
+\citet*{Chen2017} point out several factors that make Optimization Problem~\ref{opt:opt1} difficult:
+
+\begin{enumerate}
+\item The cost function is multi-objective
+\item Constraint \ref{eq:goal} is a maximization
+\item Constraint \ref{eq:onehot} is integral
+\end{enumerate}
+
+These difficulties are addressed by a series of transformations which begins with the following single-objective optimization subproblem:
+
+\begin{optimization}
+  \label{opt:opt2}
+  \begin{IEEEeqnarray}{ll}
+    \min_{\mathbf{x}} & \quad \max_{k\in\mathcal{K}}\left(\tau_k\right) \\
+    \text{s.t.}  & \quad \text{Constraints \eqref{eq:goal}, \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
+  \end{IEEEeqnarray}
+\end{optimization}
+
+Next transformation eliminates the maximum function from the constraints by substituting it into the cost function:
+
+\begin{optimization}
+  \label{opt:opt3}
+  \begin{IEEEeqnarray}{ll}
+    \min_{\mathbf{x}} & \quad \max_{k\in\mathcal{K}}\left(\max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right)\right) \\
+    \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
+  \end{IEEEeqnarray}
+\end{optimization}
+
+At this point it remains to remove the integer constraints \eqref{eq:onehot}. \citet{Chen2017} achieve this by proving that Optimization Problem~\ref{opt:opt3} actually belongs to a class of optimization problems described by \citet*{Meyer1976} for which a reduction to an equivalent Linear Programming (LP) problem is possible.
 
 \subsection{Proposed Scheduling Algorithm}
+
+Having shown that Optimization Problem~\ref{opt:opt3} could be reduced to an equivalent Linear Programming (LP) problem, \citet{Chen2017} propose the following scheduling algorithm:
+
+
 
 %% Table~\ref{tab:related_algorithms} shows a summary of related algorithms.
 
