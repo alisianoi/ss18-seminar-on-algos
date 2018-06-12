@@ -134,7 +134,7 @@ Having shown that Optimization Problem~\ref{opt:opt3} could be reduced to an equ
   \caption{Scheduling Algorithm that iteratively solves the equivalent LP}
 \end{algorithm}
 
-The proposed Algorithm~\ref{alg:main} requires information about the geographically distributed datacenter in the form of individual datacenter capacities \(a_j\) as well as bandwidth characteristics \(b_{s, j}\) between each pair of datacenters \(s\neq j\). Together with the distribution of input data \(d^{k, s}_i\) and task execution times \(e_{i, j}\) this is enough information to formulate Optimization Problem~\ref{opt:opt3}, reduce it to the equivalent linear program and obtain a solution. On each iteration, the solution to that linear problem is an assignment of tasks to datacenters which minimizes the longest job completion time. In other words, it produces a job \(k^*\) whose task \(k^*\)
+The proposed Algorithm~\ref{alg:main} requires information about the geographically distributed datacenter in the form of individual datacenter capacities \(a_j\) as well as bandwidth characteristics \(b_{s, j}\) between each pair of datacenters \(s\neq j\). Together with the distribution of input data \(d^{k, s}_i\) and task execution times \(e_{i, j}\) this is enough information to formulate Optimization Problem~\ref{opt:opt3}, reduce it to the equivalent LP problem and solve. On each iteration, the solution to the LP problem is an assignment of tasks to datacenters which minimizes the completion time of the longest job. In other words, it produces a job \(k^*\) whose longest task \(i^*\) is running in datacenter \(j^*\). At this point, the assignment \(x^{k^*}_{i^*, j^*} = 1\) becomes fixed. Even further, indicator variables related to the same task become fixed as well: \(x^{k^*}_{i^*, j}=0, \forall j\in\mathcal{D}\setminus \left\{j^*\right\}\). The number of available computing slots of datacenter \(j^*\) must be decreased by one as well. Another subtle detail is that although the completion time of the entire job \(k^*\) is already known, its tasks \(i\neq i^*\) do not have a fixed assignment to their datacenters yet. However, since any such assignment will not change the completion time of the job \(k^*\), the completion time of all the tasks \(i\neq i^*\) from that job is set to the completion time of the job. This ensures that during the next iteration of Algorithm~\ref{alg:main} a \emph{different job} will be optimized.
 
 %% Table~\ref{tab:related_algorithms} shows a summary of related algorithms.
 
@@ -153,6 +153,15 @@ The proposed Algorithm~\ref{alg:main} requires information about the geographica
 %% \end{table}
 
 \section{Evaluation of the Scheduling Algorithm}
+
+
+\subsection{Implementation}
+
+\cite{Chen2017} evaluate their scheduling algorithm in the Apache Spark framework. In particular, they substitute the \texttt{TaskScheduler} module of Apache Spark with their custom implementation. At the core of that implementation is Algorithm~\ref{alg:main}.
+
+\subsection{Experimental Setup}
+
+\cite{Chen2017} operated \emph{twelve} virtual machines instances located in \emph{six} different datacenters, with \emph{two} machines in each of the datacenters.
 
 
 %% \subsection{Evaluating the Running Time of Algorithm X}
