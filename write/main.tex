@@ -79,7 +79,7 @@ With the above definitions in place, the following optimization problem is formu
   \end{IEEEeqnarray}
 \end{optimization}
 
-Optimization Problem~\ref{opt:opt1} begins by choosing an assignment of tasks to datacenters. This assignment is captured by the values of \(x^k_{i, j}\) and must satisfy constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot}. In particular, constraint \eqref{eq:capacity} ensures that every datacenter is not assigned more tasks than the number of its available computing slots. Constraint \eqref{eq:presence} guarantees that each task is assigned to exactly one datacenter. Finally, constraint \eqref{eq:onehot} captures the fact that \(x^k_{i, j}\) is an indicator variable which is equal to one if and only if task \(i\) from job \(k\) is assigned to datacenter \(j\). Once these constraints are satisfied, constraint \eqref{eq:goal} shows how to compute the completion time of the analytic job \(k\). Finally, the cost function \eqref{eq:cost} is an instance of lexicographic minimization which collects the job completion times into a vector whose coordinates are ordered from largest to smallest. By repeatedly choosing assignments that satisfy the constraints, several such vectors are produced. By choosing the lexicographically smallest vector, it is guaranteed that the largest (i.e. slowest) job completion time is not larger than that from all the other vectors. Among all of the vectors with the same largest job completion time, the vector with the smallest second-largest job completion time is chosen, and so on. This means that the solution to the Optimization Problem~\ref{opt:opt1} is such an assignment of tasks to datacenters that it minimizes all of the job completion times.
+Optimization Problem~\ref{opt:opt1} begins by choosing an assignment of tasks to datacenters. This assignment is captured by the values of \(x^k_{i, j}\) and must satisfy constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot}. In particular, constraint \eqref{eq:capacity} ensures that every datacenter is not assigned more tasks than the number of its available computing slots. Constraint \eqref{eq:presence} guarantees that each task is assigned to exactly one datacenter. Finally, constraint \eqref{eq:onehot} captures the fact that \(x^k_{i, j}\) is an indicator variable which is equal to one if and only if task \(i\) from job \(k\) is assigned to datacenter \(j\). Once these constraints are satisfied, constraint \eqref{eq:goal} shows how to compute the completion time of the analytic job \(k\). Finally, the cost function \eqref{eq:cost} is an instance of lexicographic minimization which collects the computed job completion times into a vector. The coordinates of this vector are ordered by value from largest to smallest. By repeatedly choosing assignments that satisfy the constraints, several such vectors are produced. By choosing the lexicographically smallest vector, it is guaranteed that the largest job completion time is not larger than that from all the other vectors. Among all of the vectors with the same largest job completion time, the vector with the smallest second-largest job completion time is chosen, and so on. This means that the solution to the Optimization Problem~\ref{opt:opt1} is an assignment of tasks to datacenters that minimizes job completion times in a max-min fair fashion.
 
 Unfortunately, there are several factors that make Optimization Problem~\ref{opt:opt1} difficult to solve, as pointed out by \citet{Chen2017}:
 
@@ -89,7 +89,7 @@ Unfortunately, there are several factors that make Optimization Problem~\ref{opt
 \item Constraint \eqref{eq:onehot} is integral
 \end{enumerate}
 
-These factors are eliminated by a sequence of transformations. Optimization Problem~\ref{opt:opt2} replaces the multi-objective cost function with a single-objective one. However, this transformation changes the meaning of optimization problem: only the largest job completion time is now being minimized. As it later turns out, the solution to Optimization Problem~\ref{opt:opt2} could be used to restore the solution of the initial Optimization Problem~\ref{opt:opt1}.
+These factors are eliminated by a sequence of transformations. Optimization Problem~\ref{opt:opt2} replaces the multi-objective cost function with a single-objective one. However, this transformation slightly changes the meaning of the underlying optimization problem: only the largest job completion time is now being minimized. As it later turns out, the solution of Optimization Problem~\ref{opt:opt2} could be used to restore the solution of the initial Optimization Problem~\ref{opt:opt1}.
 
 \begin{optimization}
   \label{opt:opt2}
@@ -109,11 +109,11 @@ Optimization Problem~\ref{opt:opt3} eliminates the non-linear constraint \eqref{
   \end{IEEEeqnarray}
 \end{optimization}
 
-At this point it remains to remove the integer constraints \eqref{eq:onehot}. \citet{Chen2017} successfully do so by proving that Optimization Problem~\ref{opt:opt3} actually belongs to a class of optimization problems described by \citet*{Meyer1976} for which a reduction to an equivalent Linear Programming (LP) problem is possible. This reduction is possible due to the \(\)
+At this point it remains to remove the integer constraints \eqref{eq:onehot}. \citet{Chen2017} successfully do so by proving that Optimization Problem~\ref{opt:opt3} actually belongs to a class of optimization problems described by \citet*{Meyer1976}. For this class of optimization problems a reduction to an equivalent Linear Programming (LP) problem is possible. The exact conditions describing the class as well as the \(\lambda\)-technique to reduce to an LP problem is presented by \citet{Meyer1976}.
 
 \subsection{Proposed Scheduling Algorithm}
 
-Having shown that Optimization Problem~\ref{opt:opt3} could be reduced to an equivalent Linear Programming (LP) problem, \citet{Chen2017} propose the following scheduling algorithm~\autoref{alg:main}:
+Having shown that Optimization Problem~\ref{opt:opt3} could be reduced to an equivalent Linear Programming (LP) problem, \citet{Chen2017} propose the following scheduling algorithm:
 
 \begin{algorithm}[H]
   \label{alg:main}
@@ -131,26 +131,10 @@ Having shown that Optimization Problem~\ref{opt:opt3} could be reduced to an equ
     Set \(\phi\left(x^{k^*}_{i, j}\right) = x^{k^*}_{i, j}\left(c^{k^*}_{i^*, j^*} + e^{k^*}_{i^*, j^*}\right),\forall i\in \mathcal{T}_{k^*}, \forall j\in \mathcal{D}\) \\
     Remove \(k^*\) from \(\mathcal{K}'\)
   }
-  \caption{Scheduling Algorithm that iteratively solves the equivalent LP}
+  \caption{Scheduling algorithm that iteratively solves the equivalent LP}
 \end{algorithm}
 
-The proposed Algorithm~\ref{alg:main} requires information about the geographically distributed datacenter in the form of individual datacenter capacities \(a_j\) as well as bandwidth characteristics \(b_{s, j}\) between each pair of datacenters \(s\neq j\). Together with the distribution of input data \(d^{k, s}_i\) and task execution times \(e_{i, j}\) this is enough information to formulate Optimization Problem~\ref{opt:opt3}, reduce it to the equivalent LP problem and solve. On each iteration, the solution to the LP problem is an assignment of tasks to datacenters which minimizes the completion time of the longest job. In other words, it produces a job \(k^*\) whose longest task \(i^*\) is running in datacenter \(j^*\). At this point, the assignment \(x^{k^*}_{i^*, j^*} = 1\) becomes fixed. Even further, indicator variables related to the same task become fixed as well: \(x^{k^*}_{i^*, j}=0, \forall j\in\mathcal{D}\setminus \left\{j^*\right\}\). The number of available computing slots of datacenter \(j^*\) must be decreased by one as well. Another subtle detail is that although the completion time of the entire job \(k^*\) is already known, its tasks \(i\neq i^*\) do not have a fixed assignment to their datacenters yet. However, since any such assignment will not change the completion time of the job \(k^*\), the completion time of all the tasks \(i\neq i^*\) from that job is set to the completion time of the job. This ensures that during the next iteration of Algorithm~\ref{alg:main} a \emph{different job} will be optimized.
-
-%% Table~\ref{tab:related_algorithms} shows a summary of related algorithms.
-
-%% \begin{table}[h]
-%% \centering
-%% \captionabove{Related algorithms and their complexity.}
-%% \label{tab:related_algorithms}
-%% \begin{tabular}{ll}
-%% \toprule 
-%% algorithm & complexity \\
-%% \midrule
-%% algorithm Y & $\mathcal{O}(n)$ \\
-%% algorithm Z & $\mathcal{O}(n \log{n} )$ \\
-%% \bottomrule
-%% \end{tabular}
-%% \end{table}
+The proposed Algorithm~\ref{alg:main} requires information about the geographically distributed datacenter in the form of individual datacenter capacities \(a_j\) as well as bandwidth characteristics \(b_{s, j}\) between each pair of datacenters \(s\neq j\). Together with the distribution of input data \(d^{k, s}_i\) and task execution times \(e_{i, j}\) this is enough information to formulate Optimization Problem~\ref{opt:opt3}, reduce it to the equivalent LP problem and solve. On each iteration, the solution to the LP problem is an assignment of tasks to datacenters which minimizes the completion time of the longest analytic job. In other words, it produces a job \(k^*\) whose longest task \(i^*\) runs in datacenter \(j^*\). At this point the assignment \(x^{k^*}_{i^*, j^*} = 1\) becomes fixed. Even further, indicator variables related to the same task become fixed as well: \(x^{k^*}_{i^*, j}=0, \forall j\in\mathcal{D}\setminus \left\{j^*\right\}\). The number of available computing slots of datacenter \(j^*\) must be decreased by one too. Finally, although the completion time of the entire job \(k^*\) is already known, its tasks \(i\neq i^*\) do not have a fixed assignment to their datacenters yet. However, since any such assignment will not change the completion time of the analytic job \(k^*\), the completion time of all the tasks \(i\neq i^*\) from that job is set to the completion time of that job. This ensures that during the next iteration of Algorithm~\ref{alg:main} a \emph{different} data analytic job will be chosen.
 
 \section{Evaluation of the Scheduling Algorithm}
 
