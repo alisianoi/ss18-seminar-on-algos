@@ -8,9 +8,9 @@
 
 \section{Introduction}
 
-Here goes the introduction. We also cite the nice book by \citet{Pinedo:2012}.
-This might be a book with interesting topics, but concurrent time-stamping has also been addressed before~\cite{Dolev97}.
-In this work, \citet{Dolev97} presented the first bounded implementation of a concurrent time-stamp system.
+The task of analyzing large volumes of data is fairly common in the industry and has attracted a considerable amount of attention from researches. Probably the most notable challenge in this field is minimizing the time it takes to perform a data analytic job. Such a job operates on input data that would usually be collected in a central location for processing. This takes a significant amount of time to transfer large quantities of data across relatively slow networks that connect datacenters. The development of systems like Spanner \cite{Corbett2012}, Mesa \cite{Gupta2014}, Iridium \cite{Pu2015} or Geode \cite{Vulimiri2015} has shown that performing the computation close to where the input data is stored allows to significantly reduce the completion time of an analytic job.
+
+In order to minimize the completion time (also known as \emph{latency}), it is important to distribute the input data and corresponding tasks across several datacenters in an efficient manner. For example, the Iridium system by \citet{Pu2015} uses ``an online heuristic to redistribute the datasets \emph{prior} the queries' arrivals, and places the tasks to reduce network bottlenecks \emph{during} the query's execution''. On the other hand, the \emph{Flutter} scheduling algorithm by \citet{Hu2016} does not rely on such heuristics and instead precisely solves the scheduling problem for all tasks of a single analytic job. That result is achieved via a careful transformation of the arising optimization problem into an equivalent Linear Programming (LP) problem that could be efficiently solved. A generalization of the Flutter scheduling algorithm that accommodates several concurrent analytic jobs is presented by \citet{Chen2017}. This seminar paper outlines the key points from \cite{Chen2017}.
 
 \section{Scheduling Algorithm}
 
@@ -22,7 +22,7 @@ In this work, \citet{Dolev97} presented the first bounded implementation of a co
 
 \citet*{Chen2017} define \(\mathcal{D} = \left\{1, 2, \dots, J\right\}\) to be the set whose elements are individual datacenters and the entire set itself represents one large geographically distributed datacenter. Each individual datacenter \(j\) has a limited number of computing slots denoted by \(a_j\). Furthermore, the set of analytic jobs is defined as \(\mathcal{K} = \left\{1, 2, \dots, K\right\}\). Each of the jobs \(k\) consists of a single stage which itself is a set of independent tasks \(\mathcal{T}_k=\left\{1, 2, \dots, n_k\right\}\).
 
-In the proposed theoretical model the time it takes to complete a job is the \emph{longest} time one if its independent tasks takes to complete. In turn, the completion time of a task is the sum \(e^{k}_{i, j} + c^{k}_{i, j}\), where the first summand is the \emph{execution time} and the second --- \emph{network transfer time}. For both of them, index \(k\) is the analytic job, index \(i\) is the task from that job and index \(j\) is the index of the datacenter to which the task is assigned. The execution time for any possible assignment is assumed to be known in advance. The network transfer time, on the other hand, is calculated in the following fashion. Assume task \(i\) of job \(k\) requires input data that is stored by a set of individual datacenters \(S^k_i\). More specifically, for each datacenter \(s\in S^k_i\) the volume of input data equals to \(d^{k, s}_i\). The bandwidth between two distinct datacenters is denoted by \(b_{s, j}\), where \(s\neq j\). Then the following formula computes network transfer time:
+In the proposed formal model the time it takes to complete a job is the \emph{longest} time one if its independent tasks takes to complete. In turn, the completion time of a task is the sum \(e^{k}_{i, j} + c^{k}_{i, j}\), where the first summand is the \emph{execution time} and the second --- \emph{network transfer time}. For both of them, index \(k\) is the analytic job, index \(i\) is the task from that job and index \(j\) is the index of the datacenter to which the task is assigned. The execution time for any possible assignment is assumed to be known in advance. The network transfer time, on the other hand, is calculated in the following fashion. Assume task \(i\) of job \(k\) requires input data that is stored by a set of individual datacenters \(S^k_i\). More specifically, for each datacenter \(s\in S^k_i\) the volume of stored input data equals to \(d^{k, s}_i\). The bandwidth between two distinct datacenters \(s\) and \(j\) is denoted by \(b_{s, j}\), where \(s\neq j\). Then the following formula computes network transfer time:
 
 \begin{IEEEeqnarray*}{lCl}
   c^k_{i, j} &=&\left\{ \,
@@ -35,13 +35,13 @@ In the proposed theoretical model the time it takes to complete a job is the \em
   \right. \\
 \end{IEEEeqnarray*}
 
-The completion time of a task depends on the datacenter which executes that task. The assignment of tasks to datacenters is captured by the indicator variables \(x^{k}_{i, j}\). More specifically, \(x^k_{i, j} = 1\) when task \(i\) of job \(k\) is assigned to datacenter \(j\) and otherwise \(x^k_{i, j} = 0\). This leads to the following formula for the completion time of the entire job \(k\):
+The completion time of a task depends on the datacenter which executes that task. The assignment of tasks to datacenters is captured by the indicator variables \(x^{k}_{i, j}\). More specifically, \(x^k_{i, j} = 1\) when task \(i\) of job \(k\) is assigned to datacenter \(j\), and otherwise \(x^k_{i, j} = 0\). This leads to the following formula for the completion time of the entire job \(k\):
 
 \[\tau_k = \max_{i\in\mathcal{T}_k, j\in\mathcal{D}}x^k_{i, j}\left(e^k_{i, j} + c^k_{i, j}\right)\]
 
 \subsection{Optimization Problem}
 
-\citet{Chen2017} introduce the following definitions:
+\citet*{Chen2017} introduce the following definitions:
 
 \newcommand{\flvr}{\langle\mathbf{v}\rangle}
 \newcommand{\fbma}{\mathbf{\alpha}}
@@ -60,7 +60,7 @@ The completion time of a task depends on the datacenter which executes that task
   Lexicographic minimization of vector \(\mathbf{f}\) is represented with \(\text{lexmin}_{\mathbf{x}}\mathbf{f}\) with the optimal solution \(\mathbf{x^*}\in\mathbb{R}^K\) s.t. \(\forall \mathbf{x}\in\mathbb{R}^K: \mathbf{f}(\mathbf{x^*})\preceq\mathbf{f}(\mathbf{x})\)
 \end{definition}
 
-With the above definitions in place, \citet{Chen2017} present the following optimization problem:
+With the above definitions in place, the following optimization problem is formulated:
 
 \newcommand{\foralltdk}{\forall i \in \mathcal{T}_k, \forall j\in\mathcal{D}, \forall k\in\mathcal{K}}
 \newcommand{\fcapacity}{\sum_{k\in\mathcal{K}}\sum_{i\in\mathcal{T}_k} x^k_{i, j} \leq a_j}
@@ -79,7 +79,7 @@ With the above definitions in place, \citet{Chen2017} present the following opti
   \end{IEEEeqnarray}
 \end{optimization}
 
-Optimization Problem~\ref{opt:opt1} begins by choosing an assignment of tasks to datacenters. This assignment is captured by the values of \(x^k_{i, j}\) and must satisfy constraints \eqref{eq:capacity},\eqref{eq:presence},\eqref{eq:onehot}. In particular, constraint \eqref{eq:capacity} ensures that every datacenter is not assigned more tasks than the number of its available computing slots. Constraint \eqref{eq:presence} guarantees that each task is assigned to exactly one datacenter. Finally, constraint \eqref{eq:onehot} captures the fact that \(x^k_{i, j}\) is an indicator variable which is equal to one if and only if task \(i\) from job \(k\) is assigned to datacenter \(j\). Once these constraints are satisfied, constraint \eqref{eq:goal} shows how to compute the completion time of job \(k\). Finally, the cost function \eqref{eq:cost} is an instance of lexicographic minimization which collects the job completion times into a vector whose coordinates are ordered from largest to smallest. By repeatedly choosing assignments that satisfy the constraints, several such vectors are produced. By choosing the lexicographically smallest vector, it is guaranteed that the largest (i.e. slowest) job completion time is not larger than that from all the other vectors. Among all of the vectors with the same largest job completion time, the vector with the smallest second-largest job completion time is chosen, and so on. This means that the solution to the Optimization Problem~\ref{opt:opt1} is such an assignment of tasks to datacenters that it minimizes all of the job completion times.
+Optimization Problem~\ref{opt:opt1} begins by choosing an assignment of tasks to datacenters. This assignment is captured by the values of \(x^k_{i, j}\) and must satisfy constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot}. In particular, constraint \eqref{eq:capacity} ensures that every datacenter is not assigned more tasks than the number of its available computing slots. Constraint \eqref{eq:presence} guarantees that each task is assigned to exactly one datacenter. Finally, constraint \eqref{eq:onehot} captures the fact that \(x^k_{i, j}\) is an indicator variable which is equal to one if and only if task \(i\) from job \(k\) is assigned to datacenter \(j\). Once these constraints are satisfied, constraint \eqref{eq:goal} shows how to compute the completion time of the analytic job \(k\). Finally, the cost function \eqref{eq:cost} is an instance of lexicographic minimization which collects the job completion times into a vector whose coordinates are ordered from largest to smallest. By repeatedly choosing assignments that satisfy the constraints, several such vectors are produced. By choosing the lexicographically smallest vector, it is guaranteed that the largest (i.e. slowest) job completion time is not larger than that from all the other vectors. Among all of the vectors with the same largest job completion time, the vector with the smallest second-largest job completion time is chosen, and so on. This means that the solution to the Optimization Problem~\ref{opt:opt1} is such an assignment of tasks to datacenters that it minimizes all of the job completion times.
 
 Unfortunately, there are several factors that make Optimization Problem~\ref{opt:opt1} difficult to solve, as pointed out by \citet{Chen2017}:
 
