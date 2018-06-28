@@ -32,9 +32,18 @@ In order to minimize the completion time of an analytic job (also known as \emph
 \section{Scheduling Algorithm}
 \label{sec:scheduling-algorithm}
 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.4\textwidth]{task-job-dc} \\
+  \caption{Data processing jobs in geographically distributed datacenters by \citet{Chen2017}.}
+  \label{fig:dc}
+\end{figure}
+
 \citet{Chen2017} view a data processing \emph{job} simply as a number of \emph{tasks} that comprise it. These tasks are further separated into consecutive \emph{stages}, where the future stages depend on the results of the past stages. In other words, the tasks from a single stage must wait for the tasks from all the previous stages to complete. On the contrary, within a single stage the tasks are \emph{independent} of each other and therefore could be executed in parallel.
 
 \citet{Chen2017} further describe a geographically distributed datacenter as a group of independent datacenters connected by a network. Each single datacenter from this group contains several \emph{computing slots} which are capable of executing tasks. Furthermore, the network that connects the pairs of datacenters is expected to have significantly \emph{lower bandwidth} than the local network inside each individual datacenter. This means that transferring large amounts of data between different datacenters takes a lot of time. Finally, in order to execute a task, it must be provided with a computing slot and the necessary input data. The input data for every task is also hosted by some datacenter(s). If it so happens that a task is assigned to a datacenter that does not hold the entire input data for that task, the missing parts will be transferred across the inter-datacenter network.
+
+These concepts could be seen in \autoref{fig:dc}. In particular, the two jobs and their tasks are shown in the upper left corner. The three datacenters are depicted as rectangles, with computing slots shown as empty circles and the connection speeds marked above the arrows that point from one datacenter to the other. Input data for processing jobs is depicted as a stylized, three dimensional cylinders.
 
 \subsection{Formal Definitions}
 
