@@ -12,20 +12,20 @@ The task of analyzing large volumes of data is fairly common in the industry and
 
 Rapidly increasing amounts of data are being collected and stored on a daily basis. Some typical examples include: logs of online search queries, records of shopping-related activities on e-commerce websites, recordings of voice commands given to personal digital assistants and more. It is possible to persist all of this data because modern storage devices are as cost-effective as ever.
 
-There is great potential for companies to improve their products and services if the collected data is used to make data-driven business decisions. However, doing analytics at scale requires algorithms and frameworks which are specifically developed for processing vast amounts of data. This paper mentions some of the most notable challenges as well as frameworks in Section~\ref{sec:related-work}. Starting with Section~\ref{sec:scheduling-algorithm}, the focus shifts to the work of \citet{Chen2017} where an algorithm for fair resource scheduling among multiple data processing jobs on a geographically distributed cluster is proposed.
+There is great potential for companies to improve their products and services if the collected data is used to make data-driven business decisions. However, doing analytics at scale requires algorithms and frameworks which are specifically developed for processing vast amounts of data. This paper mentions some of the most notable challenges as well as frameworks in Section~\ref{sec:related-work}. Starting with Section~\ref{sec:scheduling-algorithm}, the focus shifts to the work of \citet{Chen2017} where an algorithm for fair resource scheduling under certain restrictions is proposed.
 
 \section{Related Work}
 \label{sec:related-work}
 
 When working with big data, it is crucial to be able to store all of it in a fault-tolerant, accessible and scalable way. The Google file system (GFS) is a rather famous distributed filesystem described in the paper by \citet{2003-ghemawat-gfs}. This filesystem is able to deliver ``high performance to a large number of clients'' and was designed to run on commodity hardware and store ``a few million of files, typically 100 MB or larger in size''. GFS design played a role in the development of the Hadoop file system (HDFS), which is one of the core components of the Apache Hadoop framework. As a file system, HDFS has proven its ability to efficiently store petabytes of data in a resilient and highly available manner. Its \href{https://wiki.apache.org/hadoop/DFS_requirements}{current design requirements could be found online\footnote{\url{https://wiki.apache.org/hadoop/DFS_requirements} (last visited \today)}} and an early description by \citet{2010-shvachko-hdfs} is available as well.
 
-Just the ability to store vast amounts of data is not enough to be able to analyze it and extract value from it. Another notable challenge is to design suitable data processing frameworks. Such frameworks should simplify the development of data processing programs and abstract away the complexity of working with a cluster of machines. In order to achieve that, a programming model named MapReduce was proposed by \citet{2004-dean-mapreduce}. This programming model expects the data processing program (also known as a \emph{data processing job}) to be described as a pair of two functions, namely \emph{map} and \emph{reduce}. The first function transforms a key/value pair into a sequence of key/value pairs. This sequence is then consumed by the second function in such a way that the values with the same key are processed together. For example, the map function could be applied to a log file which stores different actions (such as login, password change, etc.) performed by different users of some webservice. It could then filter all log entries, leaving only the ones where the user requested a password change. The reduce function would then collect for each user the list of times when they requested a password change. The MapReduce model allows to parallelize the workload automatically, without any additional effort on the part of the programmer. One of the notable frameworks that take advantage of this model is Apache Hadoop \cite{2008-zaharia-hadoop-late}.
+Just the ability to store vast amounts of data is not enough to be able to analyze it and extract value from it. Another notable challenge is to design suitable data processing frameworks. Such frameworks should simplify the development of data processing programs and abstract away the complexity of working with a cluster of machines. In order to achieve that, a programming model named MapReduce was proposed by \citet{2004-dean-mapreduce}. This programming model expects the data processing program (also known as a \emph{data processing job}) to be described as a pair of two functions, namely \emph{map} and \emph{reduce}. The first function transforms a key/value pair into a sequence of key/value pairs. This sequence is then consumed by the second function in such a way that the values with the same key are processed together. For example, the map function could be applied to a log file which stores different actions (such as login, password change, etc.) performed by different users of some webservice. It could then filter all log entries, leaving only the ones where the user requested a password change. The reduce function would then collect the list of times when a password change request was made by the user. The MapReduce model allows to parallelize the workload automatically, without any additional effort on the part of the programmer. One of the notable frameworks that take advantage of this model is Apache Hadoop \cite{2008-zaharia-hadoop-late}.
 
-Although MapReduce is a profound idea, it is not always the best approach to implement a specific algorithm\footnote{\url{https://wiki.apache.org/hadoop/HadoopIsNot} (last visited \today)}. Typical examples when MapReduce fails as a computation model include machine learning algorithms that require many iterations to complete. Moreover, although Apache Hadoop has enabled the large-scale, commercial use of consumer-grade hard disk drives, it did \emph{not} do so for random access memory (RAM). In order to facilitate the use of iterative and interactive algorithms as well as speed up computations by taking advantage of the available RAM, the Apache Spark framework was developed by \citet{2016-zaharia-spark}. The core of Apache Spark is based around the concept of resilient distributed datasets (RDD) and the 2.x release of the framework introduced a Dataset API on top of it.
+Although MapReduce is a profound idea, it is not always the best approach to implement a specific algorithm\footnote{\url{https://wiki.apache.org/hadoop/HadoopIsNot} (last visited \today)}. Typical examples when MapReduce fails as a computation model include machine learning algorithms that require many iterations to complete. Moreover, although Apache Hadoop has enabled the large-scale, commercial use of consumer-grade hard disk drives, it did \emph{not} do so for random access memory (RAM). In order to facilitate the use of iterative and interactive algorithms as well as speed up computations by taking advantage of the available RAM, the Apache Spark framework was developed by \citet{2016-zaharia-spark}. The core of Apache Spark is based around the concept of resilient distributed datasets (RDD) and the 2.x release of the framework introduced a Dataset API on top of it. For a proper introduction to Apache Spark a number of online tutorials as well as extensive documentation are available\footnote{\url{https://wiki.apache.org/hadoop\#Tutorials} (last visited \today)}.
 
 When designing such frameworks for data processing, one common challenge is the fair allocation of available resources, such as computational slots, hard disk space or network bandwidth. Multiple concurrent tasks of the same data processing job compete for these resources. In addition to that, if multiple concurrent jobs run on the same cluster, they must compete with each other as well. The fair allocation of resources ensures that there is no job or user who must wait \emph{too long} in order for their data analysis to complete. More formally, the resource allocation should be \emph{max-min fair}, meaning that an attempt to redistribute the already allocated resources would result in some job or user having to wait longer than before.
 
-The development of systems like Hadoop \cite{2008-zaharia-hadoop-late}, Spark \cite{2016-zaharia-spark}, Spanner \cite{Corbett2012}, Mesa \cite{Gupta2014}, Iridium \cite{Pu2015} or Geode \cite{Vulimiri2015} has shown that performing the computation close to where the input data is stored allows to significantly reduce the completion time of analytic jobs. In other words, it takes a lot of time to transfer large quantities of data across relatively slow networks that connect datacenters. Therefore, modern cluster resource managers, such as Hadoop Yarn or Apache Mesos, should be able to take network characteristics into account when making resource allocation decisions, especially when controlling clusters that span several georgraphic datacenters.
+The development of systems like Hadoop \cite{2008-zaharia-hadoop-late}, Spark \cite{2016-zaharia-spark}, Spanner \cite{Corbett2012}, Mesa \cite{Gupta2014}, Iridium \cite{Pu2015} or Geode \cite{Vulimiri2015} has shown that performing the computation close to where the input data is stored allows to significantly reduce the completion time of data processing jobs. In other words, it takes a lot of time to transfer large quantities of data across relatively slow networks that connect datacenters. Therefore, modern cluster resource managers, such as Hadoop Yarn or Apache Mesos, should be able to take network characteristics into account when making resource allocation decisions, especially when controlling clusters that span several georgraphically separate datacenters.
 
 In order to minimize the completion time of an analytic job (also known as \emph{latency}), it is important to distribute the input data and corresponding tasks across several datacenters in an efficient manner. For example, the Iridium system by \citet{Pu2015} uses ``an online heuristic to redistribute the datasets \emph{prior} the queries' arrivals, and places the tasks to reduce network bottlenecks \emph{during} the query's execution''. On the other hand, the \emph{Flutter} scheduling algorithm by \citet{Hu2016} does not rely on such heuristics and instead precisely solves the scheduling problem for all tasks of a single analytic job. The exact solution is possible because the underlying optimization problem was successfully transformed into an equivalent Linear Programming (LP) problem which in turn could be efficiently solved. A generalization of the Flutter scheduling algorithm that accommodates several concurrent analytic jobs is presented by \citet{Chen2017} and outlined in the rest of this seminar paper.
 
@@ -46,8 +46,8 @@ In the proposed formal model the time it takes to complete a job is the \emph{lo
   c^k_{i, j} &=&\left\{ \,
   \begin{IEEEeqnarraybox}[][c]{l?s}
     \IEEEstrut
-    0, &  when \(S^k_i = \left\{j\right\}\)\\
-    \max_{s\in S^k_i, s\neq j}\left(\frac{d^{k, s}_i}{b_{s,j}}\right) & otherwise
+    0, &  when \(S^k_i = \left\{j\right\}\),\\
+    \max_{s\in S^k_i, s\neq j}\left(\frac{d^{k, s}_i}{b_{s,j}}\right) & otherwise.
     \IEEEstrut
   \end{IEEEeqnarraybox}
   \right. \\
@@ -55,11 +55,11 @@ In the proposed formal model the time it takes to complete a job is the \emph{lo
 
 The completion time of a task depends on the datacenter which executes that task. The assignment of tasks to datacenters is captured by the indicator variables \(x^{k}_{i, j}\). More specifically, \(x^k_{i, j} = 1\) when task \(i\) of job \(k\) is assigned to datacenter \(j\), and otherwise \(x^k_{i, j} = 0\). This leads to the following formula for the completion time of the entire job \(k\):
 
-\[\tau_k = \max_{i\in\mathcal{T}_k, j\in\mathcal{D}}x^k_{i, j}\left(e^k_{i, j} + c^k_{i, j}\right)\]
+\[\tau_k = \max_{i\in\mathcal{T}_k, j\in\mathcal{D}}x^k_{i, j}\left(e^k_{i, j} + c^k_{i, j}\right).\]
 
 \subsection{Optimization Problem}
 
-\citet{Chen2017} introduce the following definitions:
+\citet{Chen2017} introduce the following definitions which are later used to formulate the optimization problem:
 
 \newcommand{\flvr}{\langle\mathbf{v}\rangle}
 \newcommand{\fbma}{\mathbf{\alpha}}
@@ -102,9 +102,9 @@ Optimization Problem~\ref{opt:opt1} begins by choosing an assignment of tasks to
 Unfortunately, there are several factors that make Optimization Problem~\ref{opt:opt1} difficult to solve, as pointed out by \citet{Chen2017}:
 
 \begin{enumerate}
-\item The cost function is multi-objective
-\item Constraint \eqref{eq:goal} is not linear
-\item Constraint \eqref{eq:onehot} is integral
+\item The cost function is multi-objective.
+\item Constraint \eqref{eq:goal} is not linear.
+\item Constraint \eqref{eq:onehot} is integral.
 \end{enumerate}
 
 These factors are eliminated by a sequence of transformations. Optimization Problem~\ref{opt:opt2} replaces the multi-objective cost function with a single-objective one. However, this transformation slightly changes the meaning of the underlying optimization problem: only the largest job completion time is now being minimized. As it later turns out, the solution of Optimization Problem~\ref{opt:opt2} could be used to restore the solution of the initial Optimization Problem~\ref{opt:opt1}.
@@ -113,7 +113,7 @@ These factors are eliminated by a sequence of transformations. Optimization Prob
   \label{opt:opt2}
   \begin{IEEEeqnarray}{ll}
     \min_{\mathbf{x}} & \quad \max_{k\in\mathcal{K}}\left(\tau_k\right) \\
-    \text{s.t.}  & \quad \text{Constraints \eqref{eq:goal}, \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
+    \text{s.t.}  & \quad \text{Constraints \eqref{eq:goal}, \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold.}
   \end{IEEEeqnarray}
 \end{optimization}
 
@@ -123,7 +123,7 @@ Optimization Problem~\ref{opt:opt3} eliminates the non-linear constraint \eqref{
   \label{opt:opt3}
   \begin{IEEEeqnarray}{ll}
     \min_{\mathbf{x}} & \quad \max_{k\in\mathcal{K}}\left(\max_{i\in\mathcal{T}_k, j\in\mathcal{D}} x^k_{i, j}\left(c^k_{i, j} + e^k_{i, j}\right)\right) \\
-    \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold}
+    \text{s.t.}  & \quad \text{Constraints \eqref{eq:capacity}, \eqref{eq:presence} and \eqref{eq:onehot} hold.}
   \end{IEEEeqnarray}
 \end{optimization}
 
@@ -131,7 +131,7 @@ At this point it remains to remove the integer constraints \eqref{eq:onehot}. \c
 
 \subsection{Proposed Scheduling Algorithm}
 
-Having shown that Optimization Problem~\ref{opt:opt3} could be reduced to an equivalent Linear Programming (LP) problem, \citet{Chen2017} propose the following scheduling algorithm:
+Having shown that Optimization Problem~\ref{opt:opt3} could be reduced to an equivalent LP problem, \citet{Chen2017} propose the following scheduling algorithm:
 
 \begin{algorithm}[H]
   \label{alg:main}
@@ -152,7 +152,7 @@ Having shown that Optimization Problem~\ref{opt:opt3} could be reduced to an equ
   \caption{Scheduling algorithm that iteratively solves the equivalent LP}
 \end{algorithm}
 
-The proposed Algorithm~\ref{alg:main} requires information about the geographically distributed datacenter in the form of individual datacenter capacities \(a_j\) as well as bandwidth characteristics \(b_{s, j}\) between each pair of datacenters \(s\neq j\). Together with the distribution of input data \(d^{k, s}_i\) and task execution times \(e_{i, j}\) this is enough information to formulate Optimization Problem~\ref{opt:opt3}, reduce it to the equivalent LP problem and solve. On each iteration, the solution to the LP problem is an assignment of tasks to datacenters which minimizes the completion time of the longest analytic job. In other words, it produces a job \(k^*\) whose longest task \(i^*\) runs in datacenter \(j^*\). At this point the assignment \(x^{k^*}_{i^*, j^*} = 1\) becomes fixed. Even further, indicator variables related to the same task become fixed as well: \(x^{k^*}_{i^*, j}=0, \forall j\in\mathcal{D}\setminus \left\{j^*\right\}\). The number of available computing slots of datacenter \(j^*\) must be decreased by one too. Finally, although the completion time of the entire job \(k^*\) is already known, its tasks \(i\neq i^*\) do not have a fixed assignment to their datacenters yet. However, since any such assignment will not change the completion time of the analytic job \(k^*\), the completion time of all the tasks \(i\neq i^*\) from that job is set to the completion time of that job. This ensures that during the next iteration of Algorithm~\ref{alg:main} a \emph{different} data processing job will be chosen.
+The proposed Algorithm~\ref{alg:main} requires information about the geographically distributed datacenter in the form of individual datacenter capacities \(a_j\) as well as bandwidth characteristics \(b_{s, j}\) between each pair of datacenters \(s\neq j\). Together with the distribution of input data \(d^{k, s}_i\) and task execution times \(e_{i, j}\) this is enough information to formulate Optimization Problem~\ref{opt:opt3}, reduce it to the equivalent LP problem and solve this LP problem. On each iteration, the solution to the LP problem is an assignment of tasks to datacenters which minimizes the completion time of the longest analytic job. In other words, it produces a job \(k^*\) whose longest task \(i^*\) runs in datacenter \(j^*\). At this point, the assignment \(x^{k^*}_{i^*, j^*} = 1\) becomes fixed. Even further, indicator variables related to the same task become fixed as well: \(x^{k^*}_{i^*, j}=0, \forall j\in\mathcal{D}\setminus \left\{j^*\right\}\). The number of available computing slots of datacenter \(j^*\) must be decreased by one too. Finally, although the completion time of the entire job \(k^*\) is already known, its tasks \(i\neq i^*\) do not have a fixed assignment to their datacenters yet. However, since any such assignment will not change the completion time of the analytic job \(k^*\), the completion time of all the tasks \(i\neq i^*\) from that job is set to the completion time of that job. This ensures that during the next iteration of Algorithm~\ref{alg:main} a \emph{different} data processing job will be chosen.
 
 \section{Evaluation of the Scheduling Algorithm}
 
@@ -160,9 +160,16 @@ The proposed Algorithm~\ref{alg:main} requires information about the geographica
 
 \subsection{Experimental Setup}
 
-\citet{Chen2017} substituted a component of the Apache Spark framework called \texttt{TaskScheduler} with their own implementation that incorporates Algorithm~\ref{alg:main}. They then tested their scheduler on a cluster of \emph{twelve} virtual machines located in \emph{six} different datacenters, with \emph{two} machines per datacenter. The Apache Spark cluster was configured to run in standalone mode with no external resource manager and no database. The legacy \texttt{Sort} application was used as the benchmark workload. \citet{Chen2017} argued that, despite this being a rather simple analytic job with only two stages, it usually generates a fair amount of traffic between cluster nodes. This would be sufficient to test whether the proposed scheduling algorithm properly minimizes job completion times by taking into account the data transfer.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\textwidth]{architecture} \\
+  \caption{Implementation of the scheduling algorithm in Spark by \citet{Chen2017}.}
+  \label{fig:architecture}
+\end{figure}
 
-In total, three scenarios with \emph{three}, \emph{four} and \emph{five} concurrent \texttt{Sort} jobs were performed. The first \emph{two} scenarios were configured to run each job with \emph{three} parallel tasks. The last scenario with the \emph{five} jobs was configured in such a way as to have \emph{twelve} tasks in total, which is equal to the number of available nodes in the cluster. Each task operated on a 100 MB dataset with 10,000 key-value pairs. The completion times were compared against the results achieved with the default scheduling of Spark. An example distribution of input data as well as inter-datacenter network speeds are shown in \autoref{fig:alloc}.
+As illustrated by \autoref{fig:architecture}, \citet{Chen2017} substituted a component of the Apache Spark framework called \texttt{TaskScheduler} with their own implementation that incorporates Algorithm~\ref{alg:main}. Then they tested their scheduler on a cluster of \emph{twelve} virtual machines located in \emph{six} different datacenters, with \emph{two} machines per datacenter. The Apache Spark cluster was configured to run in standalone mode with no external resource manager and no database. The legacy \texttt{Sort} application was used as the benchmark workload. \citet{Chen2017} argued that, despite this being a rather simple analytic job with only two stages, the \texttt{Sort} job usually generates a fair amount of traffic between cluster nodes. This would be sufficient to test whether the proposed scheduling algorithm properly minimizes job completion times and takes into account the data transfer.
+
+In total, three scenarios with \emph{three}, \emph{four} and \emph{five} concurrent \texttt{Sort} jobs were performed. The first \emph{two} scenarios were configured to run each job with \emph{three} parallel tasks. The last scenario with the \emph{five} jobs was configured in such a way as to have \emph{twelve} tasks in total, which is equal to the number of available nodes in the cluster. Each task operated on a 100 MB dataset with 10,000 key-value pairs. The completion times were compared against the results achieved with the default scheduling of Spark in standalone mode. An example distribution of input data as well as inter-datacenter network speeds are shown in \autoref{fig:alloc}. In particular, \autoref{fig:alloc} shows that there were 4 data processing jobs A, B, C and D each of which consisted of three tasks (e.g. A1, A2 and A3). Each task was scheduled in one of the six datacenters which are depicted as circles. The datacenters are pairwise connected, with connection speeds shown in megabits per second.
 
 \begin{figure}
   \centering
@@ -170,7 +177,6 @@ In total, three scenarios with \emph{three}, \emph{four} and \emph{five} concurr
   \caption{Example allocation of tasks and input data by \citet{Chen2017}.}
   \label{fig:alloc}
 \end{figure}
-
 
 \subsection{Experimental Results}
 
@@ -183,11 +189,11 @@ The results of the comparison are summarized by \autoref{fig:main_result}. The t
   \label{fig:main_result}
 \end{figure}
 
-The time to execute Algorithm~\ref{alg:main} was also measured during the experiments and is shown in \autoref{fig:algo_time}. The horizonal axis is the number of indicator variables \(x^k_{i, j}\) contained in the equivalent LP problem. Recall that the cluster consists of twelve computing slots (i.e. six datacenters with two computing slots each). Then the first bin of the histogram plot in \autoref{fig:algo_time} shows the time it takes to assign one task to some node in the cluster. The last bin --- the time it takes to assign ten such tasks.
+The time to execute Algorithm~\ref{alg:main} was also measured during the experiments and is shown in \autoref{fig:algo_time}. The horizonal axis is the number of indicator variables \(x^k_{i, j}\) contained in the equivalent LP problem. Recall that the cluster consists of twelve computing slots (i.e. six datacenters with two computing slots each). Then the first bin of the histogram plot in \autoref{fig:algo_time} shows the time it takes to assign one task to some node in the cluster. In contrast, the last bin in \autoref{fig:algo_time} shows the time it takes to assign ten such tasks. This shows that the scheduling algorithm is reasonably fast and capable of scheduling a handful of tasks in a matter of seconds.
 
 \begin{figure}
   \centering
-  \includegraphics[width=\textwidth]{algo_time} \\
+  \includegraphics[width=0.6\textwidth]{algo_time} \\
   \caption{Scheduling algorithm running times by \citet{Chen2017}.}
   \label{fig:algo_time}
 \end{figure}
