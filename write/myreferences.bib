@@ -192,6 +192,88 @@
   issn    = {0363-0129},
 }
 
+@inproceedings{2004-dean-mapreduce,
+  title           = {MapReduce: Simplified Data Processing on Large Clusters},
+  author          = {Jeffrey Dean and Sanjay Ghemawat},
+  year            = {2004},
+  booktitle       = {OSDI'04: Sixth Symposium on Operating System Design and Implementation},
+  pages           = {137--150},
+  address         = {San Francisco, CA}
+}
+
+@inproceedings{2003-ghemawat-gfs,
+  title         = {The Google File System},
+  author        = {Sanjay Ghemawat and Howard Gobioff and Shun-Tak Leung},
+  year          = {2003},
+  booktitle     = {Proceedings of the 19th ACM Symposium on Operating  Systems Principles},
+  pages         = {20--43},
+  address       = {Bolton Landing, NY}
+}
+
+@inproceedings{2010-shvachko-hdfs,
+  author    = {Konstantin Shvachko and
+               Hairong Kuang and
+               Sanjay Radia and
+               Robert Chansler},
+  title     = {The Hadoop Distributed File System},
+  booktitle = {{IEEE} 26th Symposium on Mass Storage Systems and Technologies, {MSST}
+               2012, Lake Tahoe, Nevada, USA, May 3-7, 2010},
+  pages     = {1--10},
+  year      = {2010},
+  crossref  = {DBLP:conf/mss/2010},
+  url       = {https://doi.org/10.1109/MSST.2010.5496972},
+  doi       = {10.1109/MSST.2010.5496972},
+  timestamp = {Fri, 26 May 2017 00:50:28 +0200},
+  biburl    = {https://dblp.org/rec/bib/conf/mss/ShvachkoKRC10},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{2008-zaharia-hadoop-late,
+  author    = {Matei Zaharia and
+               Andy Konwinski and
+               Anthony D. Joseph and
+               Randy H. Katz and
+               Ion Stoica},
+  title     = {Improving MapReduce Performance in Heterogeneous Environments},
+  booktitle = {8th {USENIX} Symposium on Operating Systems Design and Implementation,
+               {OSDI} 2008, December 8-10, 2008, San Diego, California, USA, Proceedings},
+  pages     = {29--42},
+  year      = {2008},
+  crossref  = {DBLP:conf/osdi/2008},
+  url       = {http://www.usenix.org/events/osdi08/tech/full_papers/zaharia/zaharia.pdf},
+  timestamp = {Thu, 15 May 2014 18:36:23 +0200},
+  biburl    = {https://dblp.org/rec/bib/conf/osdi/ZahariaKJKS08},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{2016-zaharia-spark,
+  author    = {Matei Zaharia and
+               Reynold S. Xin and
+               Patrick Wendell and
+               Tathagata Das and
+               Michael Armbrust and
+               Ankur Dave and
+               Xiangrui Meng and
+               Josh Rosen and
+               Shivaram Venkataraman and
+               Michael J. Franklin and
+               Ali Ghodsi and
+               Joseph Gonzalez and
+               Scott Shenker and
+               Ion Stoica},
+  title     = {Apache Spark: a unified engine for big data processing},
+  journal   = {Commun. {ACM}},
+  volume    = {59},
+  number    = {11},
+  pages     = {56--65},
+  year      = {2016},
+  url       = {http://doi.acm.org/10.1145/2934664},
+  doi       = {10.1145/2934664},
+  timestamp = {Tue, 02 Jan 2018 16:25:29 +0100},
+  biburl    = {https://dblp.org/rec/bib/journals/cacm/ZahariaXWDADMRV16},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
 @proceedings{DBLP:conf/sigcomm/2015,
   editor    = {Steve Uhlig and
                Olaf Maennel and
@@ -209,7 +291,7 @@
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
-@Proceedings{DBLP:conf/infocom/2017,
+@proceedings{DBLP:conf/infocom/2017,
   title     = {2017 {IEEE} Conference on Computer Communications, {INFOCOM} 2017, Atlanta, GA, USA, May 1-4, 2017},
   year      = {2017},
   publisher = {{IEEE}},
@@ -254,6 +336,35 @@
   url       = {https://www.usenix.org/publications/proceedings/?f[0]=im_group_audience%3A279},
   timestamp = {Wed, 29 Mar 2017 16:43:02 +0200},
   biburl    = {https://dblp.org/rec/bib/conf/nsdi/2012},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@proceedings{DBLP:conf/mss/2010,
+  editor    = {Mohammed G. Khatib and
+               Xubin He and
+               Michael Factor},
+  title     = {{IEEE} 26th Symposium on Mass Storage Systems and Technologies, {MSST}
+               2012, Lake Tahoe, Nevada, USA, May 3-7, 2010},
+  publisher = {{IEEE} Computer Society},
+  year      = {2010},
+  url       = {http://ieeexplore.ieee.org/xpl/mostRecentIssue.jsp?punumber=5488875},
+  isbn      = {978-1-4244-7153-9},
+  timestamp = {Wed, 29 Mar 2017 16:45:25 +0200},
+  biburl    = {https://dblp.org/rec/bib/conf/mss/2010},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@proceedings{DBLP:conf/osdi/2008,
+  editor    = {Richard Draves and
+               Robbert van Renesse},
+  title     = {8th {USENIX} Symposium on Operating Systems Design and Implementation,
+               {OSDI} 2008, December 8-10, 2008, San Diego, California, USA, Proceedings},
+  publisher = {{USENIX} Association},
+  year      = {2008},
+  url       = {https://www.usenix.org/publications/proceedings/?f[0]=im_group_audience%3A73},
+  isbn      = {978-1-931971-65-2},
+  timestamp = {Thu, 15 May 2014 18:36:23 +0200},
+  biburl    = {https://dblp.org/rec/bib/conf/osdi/2008},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
